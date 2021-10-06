@@ -19,7 +19,6 @@ L_SQUARE_BRACKET	[[]
 R_SQUARE_BRACKET	[]]
 ASSIGN	({COLON}[=])
 
-//alphabet
 A	[a]
 B	[b]
 C	[c]
@@ -47,7 +46,6 @@ X	[x]
 Y	[y]
 Z	[z]
 
-//keywords
 FUNCTION	({F}{U}{N}{C}{T}{I}{O}{N})
 IF		({I}{F})
 ENDIF		({E}{N}{D}{I}{F})
@@ -77,13 +75,40 @@ ARRAY		({A}{R}{R}{A}{Y})
 
 
 %%
-{EQ}	printf("This is an EQUALS: {%s}\n", yytext);
-{ADD}	printf("This is an ADD: {%s}\n", yytext);
-{NEQ}	printf("This is a NEQ: {%s}\n", yytext);
-{GTE}	printf("This is a GTE: {%s}\n", yytext);
-{GT}	printf("This is a GT: {%s}\n", yytext);
-{ASSIGN}	printf("This is an ASSIGN: {%s}\n", yytext);
-{COLON}	printf("This is a COLON: {%s}\n", yytext);
+{EQ}		printf("EQUALS: {%s}\n", yytext);
+{ADD}		printf("ADD: {%s}\n", yytext);
+{NEQ}		printf("NEQ: {%s}\n", yytext);
+{GTE}		printf("GTE: {%s}\n", yytext);
+{GT}		printf("GT: {%s}\n", yytext);
+{ASSIGN}	printf("ASSIGN: {%s}\n", yytext);
+{COLON}		printf("COLON: {%s}\n", yytext);
+
+{FUNCTION}	printf("FUNCTION: {%s}\n", yytext);
+{IF}		printf("IF: {%s}\n", yytext);
+{ENDIF}		printf("ENDIF: {%s}\n", yytext);
+{ELSE}		printf("ELSE: {%s}\n", yytext);
+{THEN}		printf("THEN: {%s}\n", yytext);
+{RETURN}	printf("RETURN: {%s}\n", yytext);
+{BEGIN_PARAMS}	printf("BEGINPARAMS: {%s}\n", yytext);
+{END_PARAMS}	printf("ENDPARAMS: {%s}\n", yytext);
+{BEGIN_LOCALS}	printf("BEGINLOCALS: {%s}\n", yytext);
+{END_LOCALS}	printf("ENDLOCALS: {%s}\n", yytext);
+{BEGIN_BODY}	printf("BEGINBODY: {%s}\n", yytext);
+{END_BODY}	printf("ENDBODY: {%s}\n", yytext);
+{READ}		printf("READ: {%s}\n", yytext);
+{WRITE}		printf("WRITE: {%s}\n", yytext);
+{OF}		printf("OF: {%s}\n", yytext);
+{INTEGER}	printf("INTEGER: {%s}\n", yytext);
+{OR}		printf("OR: {%s}\n", yytext);
+{TRUE}		printf("TRUE: {%s}\n", yytext);
+{FALSE}		printf("FALSE: {%s}\n", yytext);
+{DO}		printf("DO: {%s}\n", yytext);
+{BEGINLOOP}	printf("BEGINLOOP: {%s}\n", yytext);
+{ENDLOOP}	printf("ENDLOOP: {%s}\n", yytext);
+{CONTINUE}	printf("CONTINUE: {%s}\n", yytext);
+{AND}		printf("AND: {%s}\n", yytext);
+{WHILE}		printf("WHILE: {%s}\n", yytext);
+{ARRAY}		printf("ARRAY: {%s}\n", yytext);
 .	printf("");
 %%
 
