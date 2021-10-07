@@ -1,115 +1,131 @@
-NUMBER	[0-9]
-SUB	[-]
-ADD	[+]
-MULT	[*]
-DIV	[/]
-MOD	[%]
-EQ	[=]{2}
-LT	[<]
-GT	[>]
-NEQ	({LT}{GT})
-LTE	({LT}[=])
-GTE	({GT}[=])
-SEMICOLON	[;]
-COLON	[:]
-COMMA	[,]
-L_PAREN	[(]
-R_PAREN	[)]
+NUMBER			[0-9]
+SUB			[-]
+ADD			[+]
+MULT			[*]
+DIV			[/]
+MOD			[%]
+EQ			[=]{2}
+LT			[<]
+GT			[>]
+NEQ			({LT}{GT})
+LTE			({LT}[=])
+GTE			({GT}[=])
+SEMICOLON		[;]
+COLON			[:]
+COMMA			[,]
+L_PAREN			[(]
+R_PAREN			[)]
 L_SQUARE_BRACKET	[[]
 R_SQUARE_BRACKET	[]]
-ASSIGN	({COLON}[=])
+ASSIGN			({COLON}[=])
 
-A	[a]
-B	[b]
-C	[c]
-D	[d]
-E	[e]
-F	[f]
-G	[g]
-H	[h]
-I	[i]
-J	[j]
-K	[k]
-L	[l]
-M	[m]
-N	[n]
-O	[o]
-P	[p]
-Q	[q]
-R	[r]
-S	[s]
-T	[t]
-U	[u]
-V	[v]
-W	[w]
-X	[x]
-Y	[y]
-Z	[z]
+A			[a]
+B			[b]
+C			[c]
+D			[d]
+E			[e]
+F			[f]
+G			[g]
+H			[h]
+I			[i]
+J			[j]
+K			[k]
+L			[l]
+M			[m]
+N			[n]
+O			[o]
+P			[p]
+Q			[q]
+R			[r]
+S			[s]
+T			[t]
+U			[u]
+V			[v]
+W			[w]
+X			[x]
+Y			[y]
+Z			[z]
+_			[_]	
 
-FUNCTION	({F}{U}{N}{C}{T}{I}{O}{N})
-IF		({I}{F})
-ENDIF		({E}{N}{D}{I}{F})
-ELSE		({E}{L}{S}{E})
-THEN		({T}{H}{E}{N})
-RETURN		({R}{E}{T}{U}{R}{N})
-BEGIN_PARAMS	({B}{E}{G}{I}{N}{P}{A}{R}{A}{M}{S})
-END_PARAMS	({E}{N}{D}{P}{A}{R}{A}{M}{S})
-BEGIN_LOCALS	({B}{E}{G}{I}{N}{L}{O}{C}{A}{L}{S})
-END_LOCALS	({E}{N}{D}{L}{O}{C}{A}{L}{S})
-BEGIN_BODY	({B}{E}{G}{I}{N}{B}{O}{D}{Y})
-END_BODY	({E}{N}{D}{B}{O}{D}{Y})
-READ		({R}{E}{A}{D})
-WRITE		({W}{R}{I}{T}{E})
-OF		({O}{F})
-INTEGER		({I}{N}{T}{E}{G}{E}{R})
-OR		({O}{R})
-TRUE		({T}{R}{U}{E})
-FALSE		({F}{A}{L}{S}{E})
-DO		({D}{O})
-BEGINLOOP	({B}{E}{G}{I}{N}{L}{O}{O}{P})
-ENDLOOP		({E}{N}{D}{L}{O}{O}{P})
-CONTINUE	({C}{O}{N}{T}{I}{N}{U}{E})
-AND		({A}{N}{D})
-WHILE		({W}{H}{I}{L}{E})
-ARRAY		({A}{R}{R}{A}{Y})
+FUNCTION		({F}{U}{N}{C}{T}{I}{O}{N})
+IF			({I}{F})
+ENDIF			({E}{N}{D}{I}{F})
+ELSE			({E}{L}{S}{E})
+THEN			({T}{H}{E}{N})
+RETURN			({R}{E}{T}{U}{R}{N})
+BEGIN_PARAMS		({B}{E}{G}{I}{N}{P}{A}{R}{A}{M}{S})
+END_PARAMS		({E}{N}{D}{P}{A}{R}{A}{M}{S})
+BEGIN_LOCALS		({B}{E}{G}{I}{N}{L}{O}{C}{A}{L}{S})
+END_LOCALS		({E}{N}{D}{L}{O}{C}{A}{L}{S})
+BEGIN_BODY		({B}{E}{G}{I}{N}{B}{O}{D}{Y})
+END_BODY		({E}{N}{D}{B}{O}{D}{Y})
+READ			({R}{E}{A}{D})
+WRITE			({W}{R}{I}{T}{E})
+OF			({O}{F})
+INTEGER			({I}{N}{T}{E}{G}{E}{R})
+OR			({O}{R})
+TRUE			({T}{R}{U}{E})
+FALSE			({F}{A}{L}{S}{E})
+DO			({D}{O})
+BEGINLOOP		({B}{E}{G}{I}{N}{L}{O}{O}{P})
+ENDLOOP			({E}{N}{D}{L}{O}{O}{P})
+CONTINUE		({C}{O}{N}{T}{I}{N}{U}{E})
+AND			({A}{N}{D})
+WHILE			({W}{H}{I}{L}{E})
+ARRAY			({A}{R}{R}{A}{Y})
 
+IDENT 			[^(FUNCTION | IF | ENDIF | ELSE | THEN | RETURN | BEGIN_PARAMS | END_PARAMS | BEGIN_LOCALS | END_LOCALS | BEGIN_BODY | END_BODY | READ | WRITE | OF | INTEGER | OR | TRUE | FALSE | DO | BEGINLOOP | ENDLOOP | CONTINUE | AND | WHILE | ARRAY | \t | \n)]
 
 %%
-{EQ}		printf("EQUALS: {%s}\n", yytext);
-{ADD}		printf("ADD: {%s}\n", yytext);
-{NEQ}		printf("NEQ: {%s}\n", yytext);
-{GTE}		printf("GTE: {%s}\n", yytext);
-{GT}		printf("GT: {%s}\n", yytext);
-{ASSIGN}	printf("ASSIGN: {%s}\n", yytext);
-{COLON}		printf("COLON: {%s}\n", yytext);
+{NUMBER}		printf("NUMBER: {%s}\n", yytext);
+{SUB}			printf("SUB: {%s}\n", yytext);
+{ADD}			printf("ADD: {%s}\n", yytext);
+{MULT}			printf("MULT: {%s}\n", yytext);
+{DIV}			printf("DIV: {%s}\n", yytext);
+{MOD}			printf("MOD: {%s}\n", yytext);
+{EQ}			printf("EQ: {%s}\n", yytext);
+{LT}			printf("LT: {%s}\n", yytext);
+{GT}			printf("GT: {%s}\n", yytext);
+{NEQ}			printf("NEQ: {%s}\n", yytext);
+{LTE}			printf("LTE: {%s}\n", yytext);
+{GTE}			printf("GTE: {%s}\n", yytext);
+{SEMICOLON}		printf("SEMICOLON: {%s}\n", yytext);
+{COLON}			printf("COLON: {%s}\n", yytext);
+{COMMA}			printf("COMMA: {%s}\n", yytext);
+{L_PAREN}		printf("L_PAREN: {%s}\n", yytext);
+{R_PAREN}		printf("R_PAREN: {%s}\n", yytext);
+{L_SQUARE_BRACKET}	printf("L_SQUARE_BRACKET: {%s}\n", yytext);
+{R_SQUARE_BRACKET}	printf("R_SQUARE_BRACKET: {%s}\n", yytext);
+{ASSIGN}		printf("ASSIGN: {%s}\n", yytext);
 
-{FUNCTION}	printf("FUNCTION: {%s}\n", yytext);
-{IF}		printf("IF: {%s}\n", yytext);
-{ENDIF}		printf("ENDIF: {%s}\n", yytext);
-{ELSE}		printf("ELSE: {%s}\n", yytext);
-{THEN}		printf("THEN: {%s}\n", yytext);
-{RETURN}	printf("RETURN: {%s}\n", yytext);
-{BEGIN_PARAMS}	printf("BEGINPARAMS: {%s}\n", yytext);
-{END_PARAMS}	printf("ENDPARAMS: {%s}\n", yytext);
-{BEGIN_LOCALS}	printf("BEGINLOCALS: {%s}\n", yytext);
-{END_LOCALS}	printf("ENDLOCALS: {%s}\n", yytext);
-{BEGIN_BODY}	printf("BEGINBODY: {%s}\n", yytext);
-{END_BODY}	printf("ENDBODY: {%s}\n", yytext);
-{READ}		printf("READ: {%s}\n", yytext);
-{WRITE}		printf("WRITE: {%s}\n", yytext);
-{OF}		printf("OF: {%s}\n", yytext);
-{INTEGER}	printf("INTEGER: {%s}\n", yytext);
-{OR}		printf("OR: {%s}\n", yytext);
-{TRUE}		printf("TRUE: {%s}\n", yytext);
-{FALSE}		printf("FALSE: {%s}\n", yytext);
-{DO}		printf("DO: {%s}\n", yytext);
-{BEGINLOOP}	printf("BEGINLOOP: {%s}\n", yytext);
-{ENDLOOP}	printf("ENDLOOP: {%s}\n", yytext);
-{CONTINUE}	printf("CONTINUE: {%s}\n", yytext);
-{AND}		printf("AND: {%s}\n", yytext);
-{WHILE}		printf("WHILE: {%s}\n", yytext);
-{ARRAY}		printf("ARRAY: {%s}\n", yytext);
-.	printf("");
+{FUNCTION}		printf("FUNCTION: {%s}\n", yytext);
+{IF}			printf("IF: {%s}\n", yytext);
+{ENDIF}			printf("ENDIF: {%s}\n", yytext);
+{ELSE}			printf("ELSE: {%s}\n", yytext);
+{THEN}			printf("THEN: {%s}\n", yytext);
+{RETURN}		printf("RETURN: {%s}\n", yytext);
+{BEGIN_PARAMS}		printf("BEGINPARAMS: {%s}\n", yytext);
+{END_PARAMS}		printf("ENDPARAMS: {%s}\n", yytext);
+{BEGIN_LOCALS}		printf("BEGINLOCALS: {%s}\n", yytext);
+{END_LOCALS}		printf("ENDLOCALS: {%s}\n", yytext);
+{BEGIN_BODY}		printf("BEGINBODY: {%s}\n", yytext);
+{END_BODY}		printf("ENDBODY: {%s}\n", yytext);
+{READ}			printf("READ: {%s}\n", yytext);
+{WRITE}			printf("WRITE: {%s}\n", yytext);
+{OF}			printf("OF: {%s}\n", yytext);
+{INTEGER}		printf("INTEGER: {%s}\n", yytext);
+{OR}			printf("OR: {%s}\n", yytext);
+{TRUE}			printf("TRUE: {%s}\n", yytext);
+{FALSE}			printf("FALSE: {%s}\n", yytext);
+{DO}			printf("DO: {%s}\n", yytext);
+{BEGINLOOP}		printf("BEGINLOOP: {%s}\n", yytext);
+{ENDLOOP}		printf("ENDLOOP: {%s}\n", yytext);
+{CONTINUE}		printf("CONTINUE: {%s}\n", yytext);
+{AND}			printf("AND: {%s}\n", yytext);
+{WHILE}			printf("WHILE: {%s}\n", yytext);
+{ARRAY}			printf("ARRAY: {%s}\n", yytext);
+{IDENT}			printf("IDENT: {%s}\n", yytext);
+.			printf("");
 %%
 
 main() {
