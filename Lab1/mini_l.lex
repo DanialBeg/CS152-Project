@@ -18,61 +18,34 @@ R_PAREN			[)]
 L_SQUARE_BRACKET	[[]
 R_SQUARE_BRACKET	[]]
 ASSIGN			({COLON}[=])
+TEST	"TEST"
 
-A			[a]
-B			[b]
-C			[c]
-D			[d]
-E			[e]
-F			[f]
-G			[g]
-H			[h]
-I			[i]
-J			[j]
-K			[k]
-L			[l]
-M			[m]
-N			[n]
-O			[o]
-P			[p]
-Q			[q]
-R			[r]
-S			[s]
-T			[t]
-U			[u]
-V			[v]
-W			[w]
-X			[x]
-Y			[y]
-Z			[z]
-_			[_]	
-
-FUNCTION		({F}{U}{N}{C}{T}{I}{O}{N})
-IF			({I}{F})
-ENDIF			({E}{N}{D}{I}{F})
-ELSE			({E}{L}{S}{E})
-THEN			({T}{H}{E}{N})
-RETURN			({R}{E}{T}{U}{R}{N})
-BEGIN_PARAMS		({B}{E}{G}{I}{N}{P}{A}{R}{A}{M}{S})
-END_PARAMS		({E}{N}{D}{P}{A}{R}{A}{M}{S})
-BEGIN_LOCALS		({B}{E}{G}{I}{N}{L}{O}{C}{A}{L}{S})
-END_LOCALS		({E}{N}{D}{L}{O}{C}{A}{L}{S})
-BEGIN_BODY		({B}{E}{G}{I}{N}{B}{O}{D}{Y})
-END_BODY		({E}{N}{D}{B}{O}{D}{Y})
-READ			({R}{E}{A}{D})
-WRITE			({W}{R}{I}{T}{E})
-OF			({O}{F})
-INTEGER			({I}{N}{T}{E}{G}{E}{R})
-OR			({O}{R})
-TRUE			({T}{R}{U}{E})
-FALSE			({F}{A}{L}{S}{E})
-DO			({D}{O})
-BEGINLOOP		({B}{E}{G}{I}{N}{L}{O}{O}{P})
-ENDLOOP			({E}{N}{D}{L}{O}{O}{P})
-CONTINUE		({C}{O}{N}{T}{I}{N}{U}{E})
-AND			({A}{N}{D})
-WHILE			({W}{H}{I}{L}{E})
-ARRAY			({A}{R}{R}{A}{Y})
+FUNCTION		"function"
+IF				"if"
+ENDIF			"endif"
+ELSE			"else"
+THEN			"then"
+RETURN			"return"
+BEGIN_PARAMS	"beginparams"
+END_PARAMS		"endparams"
+BEGIN_LOCALS		"beginlocals"
+END_LOCALS		"endlocals"
+BEGIN_BODY		"beginbody"
+END_BODY		"endbody"
+READ			"read"
+WRITE			"write"
+OF				"of"
+INTEGER			"integer"
+OR				"or"
+TRUE			"true"
+FALSE			"false"
+DO				"do"
+BEGINLOOP		"beginloop"
+ENDLOOP			"endloop"
+CONTINUE		"continue"
+AND				"and"
+WHILE			"while"
+ARRAY			"array"
 
 IDENT 			[^(FUNCTION | IF | ENDIF | ELSE | THEN | RETURN | BEGIN_PARAMS | END_PARAMS | BEGIN_LOCALS | END_LOCALS | BEGIN_BODY | END_BODY | READ | WRITE | OF | INTEGER | OR | TRUE | FALSE | DO | BEGINLOOP | ENDLOOP | CONTINUE | AND | WHILE | ARRAY | \t | \n)]
 
@@ -126,6 +99,8 @@ IDENT 			[^(FUNCTION | IF | ENDIF | ELSE | THEN | RETURN | BEGIN_PARAMS | END_PA
 {ARRAY}			printf("ARRAY: {%s}\n", yytext);
 {IDENT}			printf("IDENT: {%s}\n", yytext);
 .			printf("");
+
+
 %%
 
 main() {
