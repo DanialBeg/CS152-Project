@@ -1,7 +1,7 @@
-NUMBER			[0-9]
+NUMBER		[0-9]+
 SUB			[-]
 ADD			[+]
-MULT			[*]
+MULT		[*]
 DIV			[/]
 MOD			[%]
 EQ			[=]{2}
@@ -18,7 +18,9 @@ R_PAREN			[)]
 L_SQUARE_BRACKET	[[]
 R_SQUARE_BRACKET	[]]
 ASSIGN			({COLON}[=])
-TEST	"TEST"
+NEWLINE			("\n")+
+SPACE			(" "+)
+TAB				("\t"+)
 
 FUNCTION		"function"
 IF				"if"
@@ -28,7 +30,7 @@ THEN			"then"
 RETURN			"return"
 BEGIN_PARAMS	"beginparams"
 END_PARAMS		"endparams"
-BEGIN_LOCALS		"beginlocals"
+BEGIN_LOCALS	"beginlocals"
 END_LOCALS		"endlocals"
 BEGIN_BODY		"beginbody"
 END_BODY		"endbody"
@@ -46,64 +48,79 @@ CONTINUE		"continue"
 AND				"and"
 WHILE			"while"
 ARRAY			"array"
+UND				"_"
+IDENT_ERROR_NUM		([0-9]+[a-z0-9_]*)
+IDENT_ERROR_F_UND		([_]+[a-z0-9_]*)
+IDENT_ERROR_B_UND		([a-z][a-z0-9_]*[_])
+IDENT			([a-z][a-z0-9_]*)
+COMMENT			(#{2}.*\n)
+ALL				(.)
 
-IDENT 			[^(FUNCTION | IF | ENDIF | ELSE | THEN | RETURN | BEGIN_PARAMS | END_PARAMS | BEGIN_LOCALS | END_LOCALS | BEGIN_BODY | END_BODY | READ | WRITE | OF | INTEGER | OR | TRUE | FALSE | DO | BEGINLOOP | ENDLOOP | CONTINUE | AND | WHILE | ARRAY | \t | \n)]
+%{
+int line_c = 1;
+int char_c = 1;
+%}
 
 %%
-{NUMBER}		printf("NUMBER: {%s}\n", yytext);
-{SUB}			printf("SUB: {%s}\n", yytext);
-{ADD}			printf("ADD: {%s}\n", yytext);
-{MULT}			printf("MULT: {%s}\n", yytext);
-{DIV}			printf("DIV: {%s}\n", yytext);
-{MOD}			printf("MOD: {%s}\n", yytext);
-{EQ}			printf("EQ: {%s}\n", yytext);
-{LT}			printf("LT: {%s}\n", yytext);
-{GT}			printf("GT: {%s}\n", yytext);
-{NEQ}			printf("NEQ: {%s}\n", yytext);
-{LTE}			printf("LTE: {%s}\n", yytext);
-{GTE}			printf("GTE: {%s}\n", yytext);
-{SEMICOLON}		printf("SEMICOLON: {%s}\n", yytext);
-{COLON}			printf("COLON: {%s}\n", yytext);
-{COMMA}			printf("COMMA: {%s}\n", yytext);
-{L_PAREN}		printf("L_PAREN: {%s}\n", yytext);
-{R_PAREN}		printf("R_PAREN: {%s}\n", yytext);
-{L_SQUARE_BRACKET}	printf("L_SQUARE_BRACKET: {%s}\n", yytext);
-{R_SQUARE_BRACKET}	printf("R_SQUARE_BRACKET: {%s}\n", yytext);
-{ASSIGN}		printf("ASSIGN: {%s}\n", yytext);
-
-{FUNCTION}		printf("FUNCTION: {%s}\n", yytext);
-{IF}			printf("IF: {%s}\n", yytext);
-{ENDIF}			printf("ENDIF: {%s}\n", yytext);
-{ELSE}			printf("ELSE: {%s}\n", yytext);
-{THEN}			printf("THEN: {%s}\n", yytext);
-{RETURN}		printf("RETURN: {%s}\n", yytext);
-{BEGIN_PARAMS}		printf("BEGINPARAMS: {%s}\n", yytext);
-{END_PARAMS}		printf("ENDPARAMS: {%s}\n", yytext);
-{BEGIN_LOCALS}		printf("BEGINLOCALS: {%s}\n", yytext);
-{END_LOCALS}		printf("ENDLOCALS: {%s}\n", yytext);
-{BEGIN_BODY}		printf("BEGINBODY: {%s}\n", yytext);
-{END_BODY}		printf("ENDBODY: {%s}\n", yytext);
-{READ}			printf("READ: {%s}\n", yytext);
-{WRITE}			printf("WRITE: {%s}\n", yytext);
-{OF}			printf("OF: {%s}\n", yytext);
-{INTEGER}		printf("INTEGER: {%s}\n", yytext);
-{OR}			printf("OR: {%s}\n", yytext);
-{TRUE}			printf("TRUE: {%s}\n", yytext);
-{FALSE}			printf("FALSE: {%s}\n", yytext);
-{DO}			printf("DO: {%s}\n", yytext);
-{BEGINLOOP}		printf("BEGINLOOP: {%s}\n", yytext);
-{ENDLOOP}		printf("ENDLOOP: {%s}\n", yytext);
-{CONTINUE}		printf("CONTINUE: {%s}\n", yytext);
-{AND}			printf("AND: {%s}\n", yytext);
-{WHILE}			printf("WHILE: {%s}\n", yytext);
-{ARRAY}			printf("ARRAY: {%s}\n", yytext);
-{IDENT}			printf("IDENT: {%s}\n", yytext);
-.			printf("");
+{NUMBER}		printf("NUMBER %s\n", yytext, char_c += strlen(yytext));
+{SUB}			printf("SUB\n", char_c += 1);
+{ADD}			printf("ADD\n", char_c += 1);
+{MULT}			printf("MULT\n", char_c += 1);
+{DIV}			printf("DIV\n", char_c += 1);
+{MOD}			printf("MOD\n", char_c += 1);
+{EQ}			printf("EQ\n", char_c += 2);
+{LT}			printf("LT\n", char_c += 1);
+{GT}			printf("GT\n", char_c += 1);
+{NEQ}			printf("NEQ\n", char_c += 2);
+{LTE}			printf("LTE\n", char_c += 2);
+{GTE}			printf("GTE\n", char_c += 2);
+{SEMICOLON}		printf("SEMICOLON\n", char_c += 1);
+{COLON}			printf("COLON\n", char_c += 1);
+{COMMA}			printf("COMMA\n", char_c += 1);
+{L_PAREN}		printf("L_PAREN\n", char_c += 1);
+{R_PAREN}		printf("R_PAREN\n", char_c += 1);
+{L_SQUARE_BRACKET}	printf("L_SQUARE_BRACKET\n", char_c += 1);
+{R_SQUARE_BRACKET}	printf("R_SQUARE_BRACKET\n", char_c += 1);
+{ASSIGN}		printf("ASSIGN\n", char_c += 2);
+{FUNCTION}		printf("FUNCTION\n", char_c += 8);
+{IF}			printf("IF\n", char_c += 2);
+{ENDIF}			printf("ENDIF\n", char_c += 5);
+{ELSE}			printf("ELSE\n", char_c += 4);
+{THEN}			printf("THEN\n", char_c += 4);
+{RETURN}		printf("RETURN\n", char_c += 6);
+{BEGIN_PARAMS}		printf("BEGIN_PARAMS\n", char_c += 11);
+{END_PARAMS}		printf("END_PARAMS\n", char_c += 9);
+{BEGIN_LOCALS}		printf("BEGIN_LOCALS\n", char_c += 11);
+{END_LOCALS}		printf("END_LOCALS\n", char_c += 9);
+{BEGIN_BODY}		printf("BEGIN_BODY\n", char_c += 9);
+{END_BODY}		printf("END_BODY\n", char_c += 7);
+{READ}			printf("READ\n", char_c += 4);
+{WRITE}			printf("WRITE\n", char_c += 5);
+{OF}			printf("OF\n", char_c += 2);
+{INTEGER}		printf("INTEGER\n", char_c += 7);
+{OR}			printf("OR\n", char_c += 2);
+{TRUE}			printf("TRUE\n", char_c += 4);
+{FALSE}			printf("FALSE\n", char_c += 5);
+{DO}			printf("DO\n", char_c += 2);
+{BEGINLOOP}		printf("BEGINLOOP\n", char_c += 9);
+{ENDLOOP}		printf("ENDLOOP\n", char_c += 7);
+{CONTINUE}		printf("CONTINUE\n", char_c += 8);
+{AND}			printf("AND\n", char_c += 3);
+{WHILE}			printf("WHILE\n", char_c += 5);
+{ARRAY}			printf("ARRAY\n", char_c += 5);
+{COMMENT}		printf("");
+{NEWLINE}		printf("", line_c++, char_c = 1);
+{SPACE}			printf("", char_c += 1);
+{TAB}			printf("", char_c += 1);
+{IDENT_ERROR_B_UND}	printf("Error at line %d, column %d: identifier \"%s\" cannot end with underscore\n", line_c, char_c, yytext); exit(1);
+{IDENT_ERROR_NUM}	printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", line_c, char_c, yytext); exit(1);
+{IDENT_ERROR_F_UND}	printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", line_c, char_c, yytext); exit(1);
+{IDENT}			printf("IDENT %s\n", yytext, char_c += strlen(yytext));
+{ALL}			printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", line_c, char_c, yytext); exit(1);
 
 
 %%
 
 main() {
-	printf("Give me your input\n");
 	yylex();
 }

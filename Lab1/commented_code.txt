@@ -25,3 +25,11 @@ X			[x]
 Y			[y]
 Z			[z]
 _			[_]	
+
+COMMENTS		((#{2})(.*)[\n]))
+{COMMENTS}		printf("COMMENT: {%s}\n", yytext);
+{IDENT_ERROR_B_UND}	printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", line_c, char_c, yytext);
+{UND}			/* if(ident_b){printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", line_c, char_c, yytext);} */
+
+
+IDENT 			[^(FUNCTION | IF | ENDIF | ELSE | THEN | RETURN | BEGIN_PARAMS | END_PARAMS | BEGIN_LOCALS | END_LOCALS | BEGIN_BODY | END_BODY | READ | WRITE | OF | INTEGER | OR | TRUE | FALSE | DO | BEGINLOOP | ENDLOOP | CONTINUE | AND | WHILE | ARRAY | \t | \n)]
