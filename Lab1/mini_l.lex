@@ -1,7 +1,7 @@
-NUMBER		[0-9]+
+NUMBER			[0-9]+
 SUB			[-]
 ADD			[+]
-MULT		[*]
+MULT			[*]
 DIV			[/]
 MOD			[%]
 EQ			[=]{2}
@@ -28,33 +28,33 @@ ENDIF			"endif"
 ELSE			"else"
 THEN			"then"
 RETURN			"return"
-BEGIN_PARAMS	"beginparams"
+BEGIN_PARAMS		"beginparams"
 END_PARAMS		"endparams"
-BEGIN_LOCALS	"beginlocals"
+BEGIN_LOCALS		"beginlocals"
 END_LOCALS		"endlocals"
 BEGIN_BODY		"beginbody"
 END_BODY		"endbody"
 READ			"read"
 WRITE			"write"
-OF				"of"
+OF			"of"
 INTEGER			"integer"
-OR				"or"
+OR			"or"
 TRUE			"true"
 FALSE			"false"
-DO				"do"
+DO			"do"
 BEGINLOOP		"beginloop"
 ENDLOOP			"endloop"
 CONTINUE		"continue"
-AND				"and"
+AND			"and"
 WHILE			"while"
 ARRAY			"array"
-UND				"_"
+UND			"_"
 IDENT_ERROR_NUM		([0-9]+[a-z0-9_]*)
-IDENT_ERROR_F_UND		([_]+[a-z0-9_]*)
-IDENT_ERROR_B_UND		([a-z][a-z0-9_]*[_])
+IDENT_ERROR_F_UND	([_]+[a-z0-9_]*)
+IDENT_ERROR_B_UND	([a-z][a-z0-9_]*[_])
 IDENT			([a-z][a-z0-9_]*)
 COMMENT			(#{2}.*\n)
-ALL				(.)
+ALL			(.)
 
 %{
 int line_c = 1;
