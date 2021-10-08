@@ -20,10 +20,10 @@ R_SQUARE_BRACKET	[]]
 ASSIGN			({COLON}[=])
 NEWLINE			("\n")+
 SPACE			(" "+)
-TAB				("\t"+)
+TAB			("\t"+)
 
 FUNCTION		"function"
-IF				"if"
+IF			"if"
 ENDIF			"endif"
 ELSE			"else"
 THEN			"then"
