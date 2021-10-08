@@ -21,7 +21,6 @@ ASSIGN			({COLON}[=])
 NEWLINE			("\n")+
 SPACE			(" "+)
 TAB			("\t"+)
-
 FUNCTION		"function"
 IF			"if"
 ENDIF			"endif"
@@ -49,11 +48,11 @@ AND			"and"
 WHILE			"while"
 ARRAY			"array"
 UND			"_"
+COMMENT			(#{2}.*\n)
 IDENT_ERROR_NUM		([0-9]+[a-z0-9_]*)
 IDENT_ERROR_F_UND	([_]+[a-z0-9_]*)
 IDENT_ERROR_B_UND	([a-z][a-z0-9_]*[_])
 IDENT			([a-z][a-z0-9_]*)
-COMMENT			(#{2}.*\n)
 ALL			(.)
 
 %{
