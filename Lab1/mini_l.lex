@@ -18,7 +18,7 @@ R_PAREN			[)]
 L_SQUARE_BRACKET	[[]
 R_SQUARE_BRACKET	[]]
 ASSIGN			({COLON}[=])
-NEWLINE			("\n")+
+NEWLINE			("\n")
 SPACE			(" "+)
 TAB			("\t"+)
 FUNCTION		"function"
@@ -107,8 +107,8 @@ int char_c = 1;
 {AND}			printf("AND\n", char_c += 3);
 {WHILE}			printf("WHILE\n", char_c += 5);
 {ARRAY}			printf("ARRAY\n", char_c += 5);
-{COMMENT}		printf("");
-{NEWLINE}		printf("", line_c++, char_c = 1);
+{COMMENT}		printf("", line_c += 1, char_c = 1);
+{NEWLINE}		printf("", line_c += 1, char_c = 1);
 {SPACE}			printf("", char_c += 1);
 {TAB}			printf("", char_c += 1);
 {IDENT_ERROR_B_UND}	printf("Error at line %d, column %d: identifier \"%s\" cannot end with underscore\n", line_c, char_c, yytext); exit(1);
