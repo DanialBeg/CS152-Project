@@ -14,7 +14,7 @@ void yyerror(const char* s);
 	int ival;
 }
 
-%left PLUS MULT DIV L_PAREN R_PAREN EQUAL MOD EQ LT GT NEQ LTE GTE SEMICOLON COLON COMMA L_SQUARE_BRACKET R_SQUARE_BRACKET NEWLINE SPACE TAB
+%left PLUS MULT DIV L_PAREN R_PAREN EQUAL MOD LT GT NEQ LTE GTE SEMICOLON COLON COMMA L_SQUARE_BRACKET R_SQUARE_BRACKET NEWLINE SPACE TAB
 %right MINUS NOT ASSIGN
 %token NUMBER FUNCTION IF ENDIF ELSE THEN RETURN BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY READ WRITE OF INTEGER OR TRUE FALSE DO BEGINLOOP ENDLOOP CONTINUE AND WHILE ARRAY UND COMMENT IDENT_ERROR_NUM IDENT_ERROR_F_UND IDENT_ERROR_B_UND IDENT ALL
 %start expr
@@ -29,7 +29,6 @@ expr: NUMBER expr
     | R_PAREN expr
     | EQUAL expr
     | MOD expr
-    | EQ expr
     | LT expr
     | GT expr
     | NEQ expr
@@ -96,7 +95,6 @@ int main() {
 	extern int R_PAREN;
 	extern int EQUAL;
 	extern int MOD; 
-	extern int EQ;
 	extern int LT;
 	extern int GT;
 	extern int NEQ;
@@ -158,7 +156,6 @@ int main() {
 	printf("R_PAREN = %d\n", R_PAREN);
 	printf("EQUAL = %d\n", EQUAL);
 	printf("MOD = %d\n", MOD);
-	printf("EQ = %d\n", EQ);
 	printf("LT = %d\n", LT);
 	printf("GT = %d\n", GT);
 	printf("NEQ = %d\n", NEQ);
