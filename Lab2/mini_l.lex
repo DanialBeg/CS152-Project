@@ -79,8 +79,8 @@ all			(.)
 
 %%
 {tab}   ; // ignore all whitespace
-"\n"    {newline++; return NEWLINE;}
-" "     {space++; return SPACE;}
+{newline}    {newline++; return NEWLINE;}
+{space}     {space++; return SPACE;}
 "("     {lp++; return L_PAREN;}
 ")"     {rp++; return R_PAREN;}
 "=="     {eq++; return EQ;}
