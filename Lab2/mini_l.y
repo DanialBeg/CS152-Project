@@ -43,14 +43,12 @@ identifiers:	ident	{printf("identifiers -> ident\n");}
 				| identifiers COMMA identifiers	{printf("identifiers -> ident COMMA identifiers\n");}
 ;
 
-number:		NUMBER	{printf("number -> NUMBER %d\n", $1);};
-
-declaration:	identifiers COLON ARRAY L_SQUARE_BRACKET number R_SQUARE_BRACKET OF INTEGER	{printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n");}
+declaration:	identifiers COLON ARRAY L_SQUARE_BRACKET term R_SQUARE_BRACKET OF INTEGER	{printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n");}
 				| identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
 ;
 
-declarations: 	/* empty */		{printf("declarations -> epsilon\n");}
-				| declaration SEMICOLON declarations	{printf("declarations -> declaration SEMICOLON declarations\n");}
+declarations: 	declaration SEMICOLON declarations	{printf("declarations -> declaration SEMICOLON declarations\n");}
+				| /* empty */		{printf("declarations -> epsilon\n");}
 ;
 
 statements:		/* empty */	{printf("statements -> epsilon\n");}
@@ -78,15 +76,16 @@ relation-and-exp:	relation-exp	{printf("relation_and_exp -> relation_exp\n");}
 
 relation-exp: 	expression comp expression	{printf("relation_exp -> expression comp expression\n");}
 				| NOT expression comp expression	{printf("relation_exp -> NOT expression comp expression\n");}
+				| TRUE		{printf("relation_exp -> TRUE\n");}
+				| FALSE		{printf("relation_exp -> FALSE\n");}
+				| NOT TRUE	{printf("relation_exp -> NOT TRUE\n");}
+				| NOT FALSE	{printf("relation_exp -> NOT TRUE\n");}
 				| L_PAREN bool-exp R_PAREN		{printf("relation_exp -> L_PAREN bool_exp R_PAREN");}
 				| NOT L_PAREN bool-exp R_PAREN		{printf("relation_exp -> NOT L_PAREN bool_exp R_PAREN");}
-				| NOT FALSE	{printf("relation_exp -> NOT TRUE\n");}
-				| NOT TRUE	{printf("relation_exp -> NOT TRUE\n");}
-				| FALSE		{printf("relation_exp -> FALSE\n");}
-				| TRUE		{printf("relation_exp -> TRUE\n");}
 ;
 
 comp: 	EQ		{printf("comp -> EQ\n");}
+		| NEQ	{printf("comp -> NEQ\n");}
 		| LT	{printf("comp -> LT\n");}
 		| GT	{printf("comp -> GT\n");}
 		| LTE	{printf("comp -> LTE\n");}
@@ -105,13 +104,11 @@ multiplicative-expression:		term	{printf("multiplicative_expression -> term\n");
 ;
 
 term:	var	{printf("term -> var\n");}
-		| number	{printf("term -> NUMBER\n");}
+		| NUMBER	{printf("term -> NUMBER\n");}
 		| L_PAREN expression R_PAREN	{printf("term -> L_PAREN expression R_PAREN\n");}
 		| ident L_PAREN expression R_PAREN		{printf("term -> ident L_PAREN expression R_PAREN\n");}
 		| ident L_PAREN R_PAREN		{printf("term -> ident L_PAREN R_PAREN\n");}
 		| ident L_PAREN expression COMMA expression	{printf("term -> ident L_PAREN expression COMMA term\n");}
-		| SUB var %prec UNMINUS 		{printf("term -> SUB var\n");}
-		| SUB number %prec UNMINUS 		{printf("term -> SUB number\n");}
 		| SUB L_PAREN expression R_PAREN %prec UNMINUS		{printf("term -> SUB L_PAREN expression R_PAREN\n");}
 
 ;
@@ -128,5 +125,6 @@ var:	ident	{printf("var -> ident\n");}
 int yyerror(char *s)
 {
   extern int line;
-  printf("ERROR on line %d\n", s, line);
+  printf("ERROR on line %d\n", line);
+  return line;
 }
