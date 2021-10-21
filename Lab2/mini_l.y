@@ -77,6 +77,11 @@ relation-and-exp:	relation-exp	{printf("relation_and_exp -> relation_exp\n");}
 ;
 
 relation-exp: 	expression comp expression	{printf("relation_exp -> expression comp expression\n");}
+				| NOT expression comp expression	{printf("relation_exp -> NOT expression comp expression\n");}
+				| L_PAREN bool-exp R_PAREN		{printf("relation_exp -> L_PAREN bool_exp R_PAREN");}
+				| NOT L_PAREN bool-exp R_PAREN		{printf("relation_exp -> NOT L_PAREN bool_exp R_PAREN");}
+				| NOT FALSE	{printf("relation_exp -> NOT TRUE\n");}
+				| NOT TRUE	{printf("relation_exp -> NOT TRUE\n");}
 				| FALSE		{printf("relation_exp -> FALSE\n");}
 				| TRUE		{printf("relation_exp -> TRUE\n");}
 ;
@@ -90,7 +95,6 @@ comp: 	EQ		{printf("comp -> EQ\n");}
 
 expression:		multiplicative-expression	{printf("expression -> multiplicative_expression\n");}
 				| multiplicative-expression ADD multiplicative-expression	{printf("expression -> multiplicative_expression ADD multiplicative_expression\n");}
-				| ADD multiplicative-expression	{printf("expression -> ADD multiplicative_expression\n");}
 				| multiplicative-expression SUB multiplicative-expression	{printf("expression -> multiplicative_expression SUB multiplicative_expression\n");}
 ;
 
@@ -106,6 +110,10 @@ term:	var	{printf("term -> var\n");}
 		| ident L_PAREN expression R_PAREN		{printf("term -> ident L_PAREN expression R_PAREN\n");}
 		| ident L_PAREN R_PAREN		{printf("term -> ident L_PAREN R_PAREN\n");}
 		| ident L_PAREN expression COMMA expression	{printf("term -> ident L_PAREN expression COMMA term\n");}
+		| SUB var %prec UNMINUS 		{printf("term -> SUB var\n");}
+		| SUB number %prec UNMINUS 		{printf("term -> SUB number\n");}
+		| SUB L_PAREN expression R_PAREN %prec UNMINUS		{printf("term -> SUB L_PAREN expression R_PAREN\n");}
+
 ;
 
 vars:	var		{printf("vars -> var\n");}
@@ -120,5 +128,5 @@ var:	ident	{printf("var -> ident\n");}
 int yyerror(char *s)
 {
   extern int line;
-  printf("ERROR at symbol %s on line %d\n", s, line);
+  printf("ERROR on line %d\n", s, line);
 }

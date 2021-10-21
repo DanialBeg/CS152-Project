@@ -65,8 +65,8 @@ newline ["\n"]
 "_"     {return UND;}
 {comment}     {line++;}
 {number}   {yylval.ival = atoi(yytext); return NUMBER;}
-{spaces}        {line++;}
-{tabs}          {line++;}
+{spaces}        {}
+{tabs}          {}
 {newline}       {line++;}
 {id}			{yylval.label = strdup(yytext); return IDENT;}
 %%
