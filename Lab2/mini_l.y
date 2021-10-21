@@ -37,13 +37,13 @@ prog_start:		function prog_start	{printf("prog_start -> functions beg\n");}
 
 function:	FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY	{printf("function -> FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY\n");};
 
-ident:	IDENT {printf("ident -> IDENT%s\n", $1);};
+ident:	IDENT {printf("ident -> IDENT %s\n", $1);};
 
 identifiers:	ident	{printf("identifiers -> ident\n");}
 				| identifiers COMMA identifiers	{printf("identifiers -> ident COMMA identifiers\n");}
 ;
 
-number:		NUMBER	{printf("number -> NUMBER%d\n", $1);};
+number:		NUMBER	{printf("number -> NUMBER %d\n", $1);};
 
 declaration:	identifiers COLON ARRAY L_SQUARE_BRACKET number R_SQUARE_BRACKET OF INTEGER	{printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n");}
 				| identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
@@ -90,18 +90,22 @@ comp: 	EQ		{printf("comp -> EQ\n");}
 
 expression:		multiplicative-expression	{printf("expression -> multiplicative_expression\n");}
 				| multiplicative-expression ADD multiplicative-expression	{printf("expression -> multiplicative_expression ADD multiplicative_expression\n");}
+				| ADD multiplicative-expression	{printf("expression -> ADD multiplicative_expression\n");}
 				| multiplicative-expression SUB multiplicative-expression	{printf("expression -> multiplicative_expression SUB multiplicative_expression\n");}
 ;
 
 multiplicative-expression:		term	{printf("multiplicative_expression -> term\n");}
-								term MOD term	{printf("multiplicative_expression -> term MOD term\n");}
-								term DIV term	{printf("multiplicative_expression -> term DIV term\n");}
-								term MULT term	{printf("multiplicative_expression -> term MULT term\n");}
+								| term MOD term	{printf("multiplicative_expression -> term MOD term\n");}
+								| term DIV term	{printf("multiplicative_expression -> term DIV term\n");}
+								| term MULT term	{printf("multiplicative_expression -> term MULT term\n");}
 ;
 
 term:	var	{printf("term -> var\n");}
 		| number	{printf("term -> NUMBER\n");}
 		| L_PAREN expression R_PAREN	{printf("term -> L_PAREN expression R_PAREN\n");}
+		| ident L_PAREN expression R_PAREN		{printf("term -> ident L_PAREN expression R_PAREN\n");}
+		| ident L_PAREN R_PAREN		{printf("term -> ident L_PAREN R_PAREN\n");}
+		| ident L_PAREN expression COMMA expression	{printf("term -> ident L_PAREN expression COMMA term\n");}
 ;
 
 vars:	var		{printf("vars -> var\n");}
