@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "y.tab.h"
 int line = 1;
+int c = 0;
 %}
 
 digit [0-9]
