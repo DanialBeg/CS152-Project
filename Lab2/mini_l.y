@@ -41,6 +41,7 @@ ident:	IDENT {printf("ident -> IDENT %s\n", $1);};
 
 identifiers:	ident	{printf("identifiers -> ident\n");}
 				| ident COMMA identifiers	{printf("identifiers -> ident COMMA identifiers\n");}
+				| /* empty */		{printf("prog_start -> epsilon\n");}
 ;
 
 number:		NUMBER		{};
@@ -117,7 +118,6 @@ term:	var	{printf("term -> var\n");}
 		| L_PAREN expression R_PAREN	{printf("term -> L_PAREN expression R_PAREN\n");}
 		| ident L_PAREN R_PAREN		{printf("term -> ident L_PAREN R_PAREN\n");}
 		| SUB L_PAREN expression R_PAREN %prec UNMINUS		{printf("term -> SUB L_PAREN expression R_PAREN\n");}
-
 ;
 
 vars:	var		{printf("vars -> var\n");}

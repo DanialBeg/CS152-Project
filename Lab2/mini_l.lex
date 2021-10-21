@@ -9,7 +9,7 @@ int line = 1;
 digit [0-9]
 number {digit}+
 comment			(#{2}.*\n)
-id			[a-z]+
+id			[a-z][a-z0-9_]*
 spaces  [" "]+
 tabs    ["\t"]+
 newline ["\n"]
