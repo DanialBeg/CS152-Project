@@ -13,6 +13,7 @@ extern FILE* yyin;
 	int ival;
 	char* label;
 	int n;
+	int a;
 }
 
 %start prog_start
