@@ -32,8 +32,11 @@ extern FILE* yyin;
 %left L_PAREN R_PAREN
 
 %%
-prog_start:		function prog_start	{printf("prog_start -> functions prog_start\n");}
-				| /* empty */		{printf("prog_start -> epsilon\n");}
+prog_start:		functions	{printf("prog_start -> functions\n");}
+;
+
+functions:	function functions 	{printf("functions -> function functions\n");}
+			| /* empty */		{printf("functions -> epsilon\n");}
 ;
 
 function:	FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY	{printf("function -> FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY\n");};
@@ -60,23 +63,23 @@ statements:		/* empty */	{printf("statements -> epsilon\n");}
 				| statement SEMICOLON statements {printf("statements -> statement SEMICOLON statements\n");}
 ;
 
-statement:		var ASSIGN expression	{printf("var ASSIGN expression\n");}
-				| CONTINUE		{printf("statement -> CONTINUE\n");}
+statement:		var ASSIGN expression	{printf("statement -> var ASSIGN expression\n");}
 				| IF bool-exp THEN statements ENDIF		{printf("statement -> IF bool_exp THEN statements ENDIF\n");}
-				| WRITE vars	{printf("statement -> WRITE vars\n");}
-				| READ vars	{printf("statement -> READ vars\n");}
-				| DO BEGINLOOP statements ENDLOOP WHILE bool-exp	{printf("statement -> DO BEGINLOOP statements ENDLOOP WHILE bool_exp\n");}
-				| WHILE bool-exp BEGINLOOP statements ENDLOOP	{printf("statement -> WHILE bool_exp BEGINLOOP statements ENDLOOP\n");}
 				| IF bool-exp THEN statements ELSE statements ENDIF		{printf("statement -> IF bool_exp THEN statements ELSE statements ENDIF\n");}
+				| WHILE bool-exp BEGINLOOP statements ENDLOOP	{printf("statement -> WHILE bool_exp BEGINLOOP statements ENDLOOP\n");}
+				| DO BEGINLOOP statements ENDLOOP WHILE bool-exp	{printf("statement -> DO BEGINLOOP statements ENDLOOP WHILE bool_exp\n");}
+				| READ vars	{printf("statement -> READ vars\n");}
+				| WRITE vars	{printf("statement -> WRITE vars\n");}
+				| CONTINUE		{printf("statement -> CONTINUE\n");}
 				| RETURN expression		{printf("statement -> RETURN expression\n");}
 ;
 
 bool-exp:		relation-and-exp	{printf("bool_exp -> relation_and_exp\n");}
-				| relation-and-exp OR relation-and-exp		{printf("bool_exp -> relation_and_exp OR relation_and_exp\n");}
+				| relation-and-exp OR bool-exp	{printf("bool_exp -> relation_and_exp OR relation_and_exp\n");}
 ;
 
 relation-and-exp:	relation-exp	{printf("relation_and_exp -> relation_exp\n");}
-					| relation-exp AND relation-exp	{printf("relation_and_exp -> relation_exp AND relation_exp\n");}
+					| relation-exp AND relation-and-exp	{printf("relation_and_exp -> relation_exp AND relation_exp\n");}
 ;
 
 relation-exp: 	expression comp expression	{printf("relation_exp -> expression comp expression\n");}
@@ -98,8 +101,8 @@ comp: 	EQ		{printf("comp -> EQ\n");}
 ;
 
 expression:		multiplicative-expression	{printf("expression -> multiplicative_expression\n");}
-				| multiplicative-expression ADD multiplicative-expression	{printf("expression -> multiplicative_expression ADD multiplicative_expression\n");}
-				| multiplicative-expression SUB multiplicative-expression	{printf("expression -> multiplicative_expression SUB multiplicative_expression\n");}
+				| multiplicative-expression ADD expression	{printf("expression -> multiplicative_expression ADD multiplicative_expression\n");}
+				| multiplicative-expression SUB expression	{printf("expression -> multiplicative_expression SUB multiplicative_expression\n");}
 ;
 
 expressions:	expression		{};
@@ -108,10 +111,16 @@ expressions:	expression		{};
 ;
 
 multiplicative-expression:		term	{printf("multiplicative_expression -> term\n");}
-								| term MOD term	{printf("multiplicative_expression -> term MOD term\n");}
-								| term DIV term	{printf("multiplicative_expression -> term DIV term\n");}
-								| term MULT term	{printf("multiplicative_expression -> term MULT term\n");}
+								| term MOD multiplicative-expressions	{printf("multiplicative_expression -> term MOD term\n");}
+								| term DIV multiplicative-expressions	{printf("multiplicative_expression -> term DIV term\n");}
+								| term MULT multiplicative-expressions	{printf("multiplicative_expression -> term MULT term\n");}
 ;
+
+multiplicative-expressions:		term	{}
+								| term MOD multiplicative-expression	{printf("multiplicative_expression -> term MOD term\n");}
+								| term DIV multiplicative-expression	{printf("multiplicative_expression -> term DIV term\n");}
+								| term MULT multiplicative-expression	{printf("multiplicative_expression -> term MULT term\n");}
+								| /* empty */	{}
 
 term:	var	{printf("term -> var\n");}
 		| ident L_PAREN expressions R_PAREN	{printf("term -> ident L_PAREN expressions R_PAREN term\n");}
@@ -133,6 +142,6 @@ var:	ident	{printf("var -> ident\n");}
 int yyerror(char *s)
 {
   extern int line;
-  printf("ERROR on line %d\n", line);
+  printf("Error on line %d\n", line);
   return line;
 }

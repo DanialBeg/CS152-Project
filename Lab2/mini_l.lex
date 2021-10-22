@@ -11,6 +11,9 @@ digit [0-9]
 number {digit}+
 comment			(#{2}.*\n)
 id			[a-z][a-z0-9_]*
+IDENT_ERROR_NUM		[0-9]+[a-z0-9_]*
+IDENT_ERROR_F_UND	[_]+[a-z0-9_]*
+IDENT_ERROR_B_UND	[a-z][a-z0-9_]*[_]
 spaces  [" "]+
 tabs    ["\t"]+
 newline ["\n"]
@@ -69,6 +72,9 @@ newline ["\n"]
 {spaces}        {}
 {tabs}          {}
 {newline}       {line++;}
+{IDENT_ERROR_NUM}   {printf("Error on line %d\n", line); exit(1);}
+{IDENT_ERROR_F_UND}	{printf("Error on line %d\n", line); exit(1);}
+{IDENT_ERROR_B_UND}	{printf("Error on line %d\n", line); exit(1);}
 {id}			{yylval.label = strdup(yytext); return IDENT;}
 %%
 
