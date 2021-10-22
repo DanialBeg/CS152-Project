@@ -72,9 +72,9 @@ newline ["\n"]
 {spaces}        {}
 {tabs}          {}
 {newline}       {line++;}
-{IDENT_ERROR_NUM}   {printf("Error on line %d\n", line); exit(1);}
-{IDENT_ERROR_F_UND}	{printf("Error on line %d\n", line); exit(1);}
-{IDENT_ERROR_B_UND}	{printf("Error on line %d\n", line); exit(1);}
+{IDENT_ERROR_NUM}   {printf("Error on line %d: identifier \"%s\" must begin with letter\n", line, yytext); exit(1);}
+{IDENT_ERROR_F_UND}	{printf("Error on line %d: identifier \"%s\" must begin with letter\n", line, yytext); exit(1);}
+{IDENT_ERROR_B_UND}	{printf("Error on line %d: identifier \"%s\" cannot end with underscore\n", line, yytext); exit(1);}
 {id}			{yylval.label = strdup(yytext); return IDENT;}
 %%
 
