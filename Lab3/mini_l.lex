@@ -1,92 +1,97 @@
 %option noyywrap
-
-%{
-#include <stdio.h>
-#include "y.tab.h"
-int line = 1;
-int c = 0;
+%{   
+#include<string.h>
+#include "phase2.tab.h"
+   int currLine = 1, currPos = 1;
+   
+   extern char *identToken;
+   extern int numberToken;
 %}
 
-digit [0-9]
-number {digit}+
-comment			(#{2}.*\n)
-id			[a-z][a-z0-9_]*
-IDENT_ERROR_NUM		[0-9]+[a-z0-9_]*
-IDENT_ERROR_F_UND	[_]+[a-z0-9_]*
-IDENT_ERROR_B_UND	[a-z][a-z0-9_]*[_]
-spaces  [" "]+
-tabs    ["\t"]+
-newline ["\n"]
-
-%%
-"("     {return L_PAREN;}
-"/n"    {line = line + 1;}
-")"     {return R_PAREN;}
-"=="     {return EQ;}
-"+"     {return ADD;}
-"-"     {return SUB;}
-"*"     {return MULT;}
-"/"     {return DIV;}
-"%"     {return MOD;}
-"<"     {return LT;}
-">"     {return GT;}
-"<>"     {return NEQ;}
-"<="     {return LTE;}
-">="     {return GTE;}
-";"     {return SEMICOLON;}
-":"     {return COLON;}
-","     {return COMMA;}
-"["     {return L_SQUARE_BRACKET;}
-"]"     {return R_SQUARE_BRACKET;}
-""     {return NOT;}
-":="     {return ASSIGN;}
-"function"     return FUNCTION;
-"if"     {return IF;}
-"endif"     {return ENDIF;}
-"else"     {return ELSE;}
-"then"     {return THEN;}
-"return"     {return RETURN;}
-"beginparams"     {return BEGIN_PARAMS;}
-"endparams"     {return END_PARAMS;}
-"beginlocals"     {return BEGIN_LOCALS;}
-"endlocals"     {return END_LOCALS;}
-"beginbody"     {return BEGIN_BODY;}
-"endbody"     {return END_BODY;}
-"read"     {return READ;}
-"write"     {return WRITE;}
-"of"     {return OF;}
-"integer"     {return INTEGER;}
-"or"     {return OR;}
-"true"     {return TRUE;}
-"false"     {return FALSE;}
-"do"     {return DO;}
-"beginloop"     {return BEGINLOOP;}
-"endloop"     {return ENDLOOP;}
-"continue"     {return CONTINUE;}
-"and"     {return AND;}
-"while"     {return WHILE;}
-"array"     {return ARRAY;}
-"_"     {return UND;}
-{comment}     {line++;}
-{number}   {yylval.ival = atoi(yytext); return NUMBER;}
-{spaces}        {}
-{tabs}          {}
-{newline}       {line++;}
-{IDENT_ERROR_NUM}   {printf("Error on line %d: identifier \"%s\" must begin with letter\n", line, yytext); exit(1);}
-{IDENT_ERROR_F_UND}	{printf("Error on line %d: identifier \"%s\" must begin with letter\n", line, yytext); exit(1);}
-{IDENT_ERROR_B_UND}	{printf("Error on line %d: identifier \"%s\" cannot end with underscore\n", line, yytext); exit(1);}
-{id}			{yylval.label = strdup(yytext); return IDENT;}
+DIGIT    [0-9]
+LETTER   [a-zA-Z]
+   
 %%
 
-int main(int argc, char **argv)
-{
-  if ((argc > 1) && (freopen(argv[1], "r", stdin) == NULL))
-  {
-    printf("File cannot be opened\n");
-    exit( 1 );
-  }
-  
-  yyparse();
+function       {currPos += yyleng; return FUNCTION;}
+beginparams    {currPos += yyleng; return BEGIN_PARAMS;}
+endparams      {currPos += yyleng; return END_PARAMS;}
+beginlocals    {currPos += yyleng; return BEGIN_LOCALS;}
+endlocals      {currPos += yyleng; return END_LOCALS;}
+beginbody      {currPos += yyleng; return BEGIN_BODY;}
+endbody        {currPos += yyleng; return END_BODY;}
+integer        {currPos += yyleng; return INTEGER;}
+array          {currPos += yyleng; return ARRAY;}
+of             {currPos += yyleng; return OF;}
+if             {currPos += yyleng; return IF;}
+then           {currPos += yyleng; return THEN;}
+endif          {currPos += yyleng; return ENDIF;}
+else           {currPos += yyleng; return ELSE;}
+while          {currPos += yyleng; return WHILE;}
+do             {currPos += yyleng; return DO;}
+beginloop      {currPos += yyleng; return BEGINLOOP;}
+endloop        {currPos += yyleng; return ENDLOOP;}
+read           {currPos += yyleng; return READ;}
+write          {currPos += yyleng; return WRITE;}
+and            {currPos += yyleng; return AND;}
+or             {currPos += yyleng; return OR;}
+not            {currPos += yyleng; return NOT;}
+true           {currPos += yyleng; return TRUE;}
+false          {currPos += yyleng; return FALSE;}
+return         {currPos += yyleng; return RETURN;}
+"-"            {currPos += yyleng; return SUB;}
+"+"            {currPos += yyleng; return ADD;}
+"*"            {currPos += yyleng; return MULT;}
+"/"            {currPos += yyleng; return DIV;}
+"%"            {currPos += yyleng; return MOD;}
+"=="           {currPos += yyleng; return EQ;}
+"<>"           {currPos += yyleng; return NEQ;}
+"<"            {currPos += yyleng; return LT;}
+">"            {currPos += yyleng; return GT;}
+"<="           {currPos += yyleng; return LTE;}
+">="           {currPos += yyleng; return GTE;}
+";"            {currPos += yyleng; return SEMICOLON;}
+":"            {currPos += yyleng; return COLON;}
+","            {currPos += yyleng; return COMMA;}
+"("            {currPos += yyleng; return L_PAREN;}
+")"            {currPos += yyleng; return R_PAREN;}
+"["            {currPos += yyleng; return L_SQUARE_BRACKET;}
+"]"            {currPos += yyleng; return R_SQUARE_BRACKET;}
+":="           {currPos += yyleng; return ASSIGN;}
+"continue"     {currPos += yyleng; return CONTINUE;}
 
-  return 0;
+{DIGIT}+       {
+  currPos += yyleng; 
+  char * token = malloc(sizeof(char) * yyleng);
+  strcpy(token, yytext);
+  yylval.op_val = token;
+  numberToken = atoi(yytext); 
+  return NUMBER;
 }
+
+##(.)*\n       {/* do not print comments */ currLine++; currPos = 1;}
+
+[ \t]+         {/* ignore spaces */ currPos += yyleng;}
+
+"\n"           {currLine++; currPos = 1;}
+
+({LETTER})|({LETTER}({LETTER}|{DIGIT}|"_")*({LETTER}|{DIGIT}))     {
+   currPos += yyleng;
+   char * token = malloc(sizeof(char) * yyleng);
+   strcpy(token, yytext);
+   yylval.op_val = token;
+   identToken = yytext; 
+   return IDENT;
+}
+
+((("_")+)|(({DIGIT})+({LETTER}|"_")))({DIGIT}|{LETTER}|"_")*                { printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currLine, currPos, yytext); exit(0);}
+
+({LETTER})({DIGIT}|{LETTER}|"_")*("_")                                       {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currLine, currPos, yytext); exit(0);}
+
+
+.   {printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
+
+%%
+
+
+
