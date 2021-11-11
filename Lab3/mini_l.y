@@ -1,4 +1,5 @@
 %{
+   #include<stdlib.h>
    #include<stdio.h>
    #include<string.h>
    void yyerror(const char *msg);
@@ -7,6 +8,7 @@
    int otherError = 0;
    
    char *identToken;
+   char funcmain[] = "main";
    int numberToken;
    int productionID = 0;
 
@@ -71,6 +73,7 @@ end_body: END_BODY {
 function_ident: FUNCTION ident {
 
      char *token = identToken;
+	 if (strcmp(token,funcmain)) { exit(0); }
      printf("func %s\n", token);
      strcpy(list_of_function_names[count_names], token);
      count_names++;
