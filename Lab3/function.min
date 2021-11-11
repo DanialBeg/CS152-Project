@@ -1,0 +1,47 @@
+function add;
+beginparams
+	a : integer;
+	b : integer;
+endparams
+beginlocals
+endlocals
+beginbody
+        return a + b;
+endbody
+
+
+function mult;
+beginparams
+	a : integer;
+	b : integer;
+endparams
+beginlocals
+endlocals
+beginbody
+        return a * b;
+endbody
+
+
+
+function main;
+beginparams
+endparams
+
+beginlocals
+  a : integer;
+  b : integer;
+  c : integer;
+  d : integer;
+endlocals
+
+beginbody	
+
+  a := 100;
+  b := 50;
+  c := add(a, b);
+  write c;        ## should print 150
+
+
+  d := mult(c, a + b);
+  write d;        ## should print "22500", since 22500 = 150 * 150;
+endbody

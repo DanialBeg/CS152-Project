@@ -9,6 +9,7 @@
    
    char *identToken;
    char funcmain[] = "main";
+   int mainflag = 0; // 0 = notmain, 1 = main
    int numberToken;
    int productionID = 0;
 
@@ -67,13 +68,13 @@ function: function_ident
 };
 
 end_body: END_BODY {
-   printf("endfunc\n");
+   printf("endfunc\n\n");
 }
 
 function_ident: FUNCTION ident {
 
      char *token = identToken;
-	 if (strcmp(token,funcmain)) { exit(0); }
+	 if (strcmp(token,funcmain)) { mainflag = 0; } else { mainflag = 1; } // 0 = !main, 1 = main
      printf("func %s\n", token);
      strcpy(list_of_function_names[count_names], token);
      count_names++;
