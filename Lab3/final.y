@@ -1,10 +1,13 @@
 %{
    #include<stdio.h>
    #include<string.h>
+   #include <stdbool.h>
+   #include <ctype.h>
    void yyerror(const char *msg);
    extern int currLine;
    int myError = 0;
    int otherError = 0;
+   bool check = false;
    
    char *identToken;
    int numberToken;
@@ -26,6 +29,7 @@
 %type <op_val> vars
 %type <op_val> ident
 %type <op_val> expression
+%type <op_val> expressions
 %type <int_val> multiplicative_expression
 %type <op_val> term
 %start prog_start
@@ -44,6 +48,7 @@
 %token <op_val> NUMBER 
 %token <op_val> IDENT
 %type <op_val> vars-w
+%type <int_val> test
 
 %%
 
@@ -77,7 +82,6 @@ function_ident: FUNCTION ident {
      strcpy(list_of_function_names[count_names], token);
      count_names++;
 }
-
 
 
 ident:
@@ -125,7 +129,7 @@ statement:
 	char *src  = $3;
 	//printf(". __temp__%d\n", productionID);
 	//printf(". __temp__%d, %s\n", productionID, src);
-	printf("[]= %s, __temp__%d, __temp__%d\n", dest, $3, productionID-1);
+	printf("[]= %s, __temp__%d, __temp__%d\n", dest, $3-1, productionID-1);
 	//productionID = productionID + 1;
 }
 
@@ -161,13 +165,13 @@ expression:
 }
 	| multiplicative_expression ADD expression
 {     
-	char *src1 =  $1;
-	char *src2 =  $3;
+	//char *src1 =  $1;
+	//char *src2 =  $3;
 	char *dest = "_temp";
 	printf(". __temp__%d\n", productionID);
-	printf("+ __temp__%d, __temp__%d, __temp__%d\n", productionID, src1, src2);
+	printf("+ __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
 	productionID = productionID + 1;
-	$$ = dest;
+	$$ = "array";
 }
 	| multiplicative_expression SUB expression
 {
@@ -176,7 +180,7 @@ expression:
   char *src2 =  $3;
   char *dest = "_temp";
   printf("- %s, %d, %d\n", dest, src1, src2);
-  $$ = dest;
+  $$ = "array";
 
 
 };
@@ -184,40 +188,59 @@ expression:
 multiplicative_expression: 
 	term
 		{ 
-			printf(". __temp__%d\n", productionID);
-			printf("= __temp__%d, %s\n", productionID, $1);
+			//printf("Test %s\n", $1);
+			if($1 != "array"){
+				printf(". __temp__%d\n", productionID);
+				printf("= __temp__%d, %s\n", productionID, $1);
+				productionID = productionID + 1;
+				$$ = productionID; 
+				check = false;
+				break;
+			}
+			else{
+				$$ = productionID;
+			}
+			
 			//char* num = productionID + "0";
 			//char* p = "__temp__" + num;
 			//printf("Test %s\n", p);
-			$$ = productionID; 
-			productionID = productionID + 1;
+			
 		}
-	| term MULT multiplicative_expression
+	| expression MULT multiplicative_expression
 		{ 
-			printf("* __temp__%d, __temp__%d, __temp__%d\n", productionID, $1, $3);
+			printf(". __temp__%d\n", productionID, $1);
+			printf("* __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
+			productionID++;
 			$$ = "SLDKFJDSLKJ"; 
 		}
-	| term DIV multiplicative_expression
-		{ $$ = "SLDKFJDSLKJ"; }
+	| expression DIV multiplicative_expression
+		{ 
+			printf(". __temp__%d\n", productionID, $1);
+			printf("* __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
+			productionID++;
+			$$ = "SLDKFJDSLKJ"; 
+		}
 	| term MOD multiplicative_expression
 		{ $$ = "SLDKFJDSLKJ"; }
 		;
 
 term: 
 	var
-		{ $$ = $1; }
+		{ 
+			$$ = $1; 
+		}
 	| SUB var
 		{ $$ = "SLDKFJDSLKJ"; }
 	| NUMBER
 		{ $$ = $1; }
 	| SUB NUMBER
-		{ $$ = "SLDKFJDSLKJ"; }
+		{ $$ = $2; }
 	| L_PAREN expression R_PAREN
-		{ $$ = "SLDKFJDSLKJ"; }
+		{ $$ = $2; }
 	| SUB L_PAREN expression R_PAREN
-		{ $$ = "SLDKFJDSLKJ"; }
+		{ $$ = $3; }
 	| ident L_PAREN expressions R_PAREN
-		{ $$ = "SLDKFJDSLKJ"; };
+		{ $$ = $3; };
 
 expressions: 
 	/* epsilon */
@@ -288,9 +311,22 @@ var:  ident
 		{
 			//printf("var []\n");
 			printf(". __temp__%d\n", productionID);
-			printf("=[] __temp__%d, %s, __temp__%d\n", productionID, $1, $3);
+			int temp_n = $3;
+			printf("=[] __temp__%d, %s, __temp__%d\n", productionID, $1, temp_n-1);
 			productionID = productionID + 1;
+			check = true;
+			char* num = productionID + "0";
+			//printf("%d\n", productionID);
+			$$ = "array";
 		};
+
+test: MULT {
+	printf("mult test\n");
+}
+| {
+	printf("mult\n");
+};
+
 vars:
 	var
 		{
