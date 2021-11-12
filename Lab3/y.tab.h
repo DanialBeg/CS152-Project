@@ -1,9 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
-   Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -31,10 +30,6 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
-   especially those whose name start with YY_ or yy_.  They are
-   private implementation details that can be changed or removed.  */
-
 #ifndef YY_YY_Y_TAB_H_INCLUDED
 # define YY_YY_Y_TAB_H_INCLUDED
 /* Debug traces.  */
@@ -45,84 +40,76 @@
 extern int yydebug;
 #endif
 
-/* Token kinds.  */
+/* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    FUNCTION = 258,                /* FUNCTION  */
-    IF = 259,                      /* IF  */
-    ENDIF = 260,                   /* ENDIF  */
-    ELSE = 261,                    /* ELSE  */
-    THEN = 262,                    /* THEN  */
-    RETURN = 263,                  /* RETURN  */
-    BEGIN_PARAMS = 264,            /* BEGIN_PARAMS  */
-    END_PARAMS = 265,              /* END_PARAMS  */
-    BEGIN_LOCALS = 266,            /* BEGIN_LOCALS  */
-    END_LOCALS = 267,              /* END_LOCALS  */
-    BEGIN_BODY = 268,              /* BEGIN_BODY  */
-    END_BODY = 269,                /* END_BODY  */
-    SEMICOLON = 270,               /* SEMICOLON  */
-    COLON = 271,                   /* COLON  */
-    COMMA = 272,                   /* COMMA  */
-    READ = 273,                    /* READ  */
-    WRITE = 274,                   /* WRITE  */
-    OF = 275,                      /* OF  */
-    INTEGER = 276,                 /* INTEGER  */
-    OR = 277,                      /* OR  */
-    TRUE = 278,                    /* TRUE  */
-    FALSE = 279,                   /* FALSE  */
-    DO = 280,                      /* DO  */
-    BEGINLOOP = 281,               /* BEGINLOOP  */
-    ENDLOOP = 282,                 /* ENDLOOP  */
-    CONTINUE = 283,                /* CONTINUE  */
-    WHILE = 284,                   /* WHILE  */
-    ARRAY = 285,                   /* ARRAY  */
-    UND = 286,                     /* UND  */
-    COMMENT = 287,                 /* COMMENT  */
-    IDENT = 288,                   /* IDENT  */
-    NUMBER = 289,                  /* NUMBER  */
-    ASSIGN = 290,                  /* ASSIGN  */
-    AND = 291,                     /* AND  */
-    NOT = 292,                     /* NOT  */
-    LT = 293,                      /* LT  */
-    GT = 294,                      /* GT  */
-    EQ = 295,                      /* EQ  */
-    NEQ = 296,                     /* NEQ  */
-    LTE = 297,                     /* LTE  */
-    GTE = 298,                     /* GTE  */
-    ADD = 299,                     /* ADD  */
-    SUB = 300,                     /* SUB  */
-    MULT = 301,                    /* MULT  */
-    DIV = 302,                     /* DIV  */
-    MOD = 303,                     /* MOD  */
-    UNMINUS = 304,                 /* UNMINUS  */
-    L_SQUARE_BRACKET = 305,        /* L_SQUARE_BRACKET  */
-    R_SQUARE_BRACKET = 306,        /* R_SQUARE_BRACKET  */
-    L_PAREN = 307,                 /* L_PAREN  */
-    R_PAREN = 308                  /* R_PAREN  */
+    BEGIN_PARAMS = 258,
+    END_PARAMS = 259,
+    BEGIN_LOCALS = 260,
+    END_LOCALS = 261,
+    BEGIN_BODY = 262,
+    END_BODY = 263,
+    FUNCTION = 264,
+    RETURN = 265,
+    MAIN = 266,
+    L_SQUARE_BRACKET = 267,
+    R_SQUARE_BRACKET = 268,
+    INTEGER = 269,
+    ARRAY = 270,
+    OF = 271,
+    IF = 272,
+    THEN = 273,
+    ENDIF = 274,
+    ELSE = 275,
+    WHILE = 276,
+    DO = 277,
+    BEGINLOOP = 278,
+    ENDLOOP = 279,
+    CONTINUE = 280,
+    READ = 281,
+    WRITE = 282,
+    AND = 283,
+    OR = 284,
+    NOT = 285,
+    TRUE = 286,
+    FALSE = 287,
+    SUB = 288,
+    ADD = 289,
+    MULT = 290,
+    DIV = 291,
+    MOD = 292,
+    EQ = 293,
+    NEQ = 294,
+    LT = 295,
+    GT = 296,
+    LTE = 297,
+    GTE = 298,
+    SEMICOLON = 299,
+    COLON = 300,
+    COMMA = 301,
+    L_PAREN = 302,
+    R_PAREN = 303,
+    ASSIGN = 304,
+    NUMBER = 305,
+    IDENT = 306
   };
-  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+
 union YYSTYPE
 {
-#line 12 "mini_l.y"
+#line 23 "mini_l.y" /* yacc.c:1909  */
 
-	int ival;
-	char* label;
-	int n;
-	int a;
+  char *op_val;
+  int int_val;
 
-#line 124 "y.tab.h"
-
+#line 111 "y.tab.h" /* yacc.c:1909  */
 };
+
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
