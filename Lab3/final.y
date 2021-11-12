@@ -43,7 +43,7 @@
 %token SEMICOLON COLON COMMA L_PAREN R_PAREN ASSIGN
 %token <op_val> NUMBER 
 %token <op_val> IDENT
-%type <op_val> statement-final
+%type <op_val> vars-w
 
 %%
 
@@ -108,7 +108,7 @@ declaration:
 		};
 
 statement: 
-	ident ASSIGN expression statement-final
+	ident ASSIGN expression
 {
 	char *dest = $1;
 	char *src  = $3;
@@ -139,7 +139,7 @@ statement:
 		{}
 	| READ vars
 		{}
-	| WRITE vars
+	| WRITE vars-w
 		{
 			printf(".[]> %s, __temp__%d\n", $2, productionID-1);
 		}
@@ -147,11 +147,6 @@ statement:
 		{}
 	| RETURN expression
 		{};
-
-statement-final:
-	{
-		//printf("= whatup, __temp__%d\n", productionID-1);
-	};
 
 statements: 
 	statement SEMICOLON/* epsilon */
@@ -282,18 +277,19 @@ comp:
 
 var:  ident
 	{ 
-	//printf("var ident\n");
-	//printf(". __temp__%d\n", productionID);
-	//printf(". __temp__%d, %s\n", productionID, $1);
-	//printf("= %s, __temp__%d\n", $1, productionID);
-    $$ = $1; 
+		//printf("var ident\n");
+		//printf(". __temp__%d\n", productionID);
+		//printf(". __temp__%d, %s\n", productionID, $1);
+		//printf("= %s, __temp__%d\n", $1, productionID);
+		$$ = $1; 
 
 	}
 	| ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET
 		{
-			printf("var []\n");
-			//printf("[]= %s, __temp__%d\n", $1, productionID);
-			//productionID = productionID + 1;
+			//printf("var []\n");
+			printf(". __temp__%d\n", productionID);
+			printf("=[] __temp__%d, %s, __temp__%d\n", productionID, $1, $3);
+			productionID = productionID + 1;
 		};
 vars:
 	var
@@ -302,7 +298,12 @@ vars:
 		}
 	| var COMMA vars
 		{};
-	
+
+vars-w:
+	ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET
+	{
+		$$ = $1;
+	};
 
 %%
 
