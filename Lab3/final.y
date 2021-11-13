@@ -18,8 +18,8 @@
    int recent = 0;
    //char* chArr;
    int decC = 0;
-   char arrayOfArraysOfChars[254][254];
-   int charArrayIndex = 0;
+   char array_for_error_4[254][254];
+   int error_4_index = 0;
 
    struct termS {
 	   char* s;
@@ -111,7 +111,7 @@ end_body: END_BODY {
 
 function_ident: FUNCTION ident {
 
-	 charArrayIndex = 0;
+	 error_4_index = 0;
      char *token = identToken;
 	 char *t = $2;
 	 //printf("%s\n", token);
@@ -150,17 +150,17 @@ declaration:
 	   //printf("ident test %s\n", $1);
        char *token = $1;
 	   // variable error checking start
-	   if (charArrayIndex > 0) {
+	   if (error_4_index > 0) {
 		   int x = 0;
-		   for (x = 0; x < charArrayIndex; x++) {
-			   if (!strcmp(token, arrayOfArraysOfChars[x])) {
+		   for (x = 0; x < error_4_index; x++) {
+			   if (!strcmp(token, array_for_error_4[x])) {
 				   printf("Error: Variable with name '%s' has already declared.\n", token);
 				   exit(0);
 			   }
 		   }
 	   }
-	   strcpy(arrayOfArraysOfChars[charArrayIndex], token);
-   	   charArrayIndex++;
+	   strcpy(array_for_error_4[error_4_index], token);
+   	   error_4_index++;
 	   // variable error checking end
 	   strcpy(list_of_vars[count_vars], token);
 	   count_vars++;
@@ -178,17 +178,17 @@ declaration:
 		{
 			char *token = $1;
 			// variable error checking start
-			if (charArrayIndex > 0) {
+			if (error_4_index > 0) {
 				int x = 0;
-				for (x = 0; x < charArrayIndex; x++) {
-					if (!strcmp(token, arrayOfArraysOfChars[x])) {
+				for (x = 0; x < error_4_index; x++) {
+					if (!strcmp(token, array_for_error_4[x])) {
 						printf("Error: Variable with name '%s' has already declared.\n", token);
 						exit(0);
 					}
 				}
 			}
-			strcpy(arrayOfArraysOfChars[charArrayIndex], token);
-			charArrayIndex++;
+			strcpy(array_for_error_4[error_4_index], token);
+			error_4_index++;
 			// variable error checking end
 			char *array_size = $5;
 			int array_size_error = atoi(array_size);
@@ -323,6 +323,22 @@ multiplicative_expression:
 		{ 
 			//printf("isp %d\n", isp);
 			if(isp){
+				//Error #2 Check start
+				char *func_call = $1;
+				if (count_names > 0) {
+					int x = 0;
+					bool matches = false;
+					for (x = 0; x < count_names; x++) {
+						if (!strcmp(func_call, list_of_function_names[x])) {
+							matches = true;
+						}
+					}
+					if (!matches) {
+						printf("Error: Function with name '%s' does not exist.\n", func_call);
+						exit(0);
+					}
+				}
+				//Error #2 Check end
 				printf(". __temp__%d\n", productionID);
 				printf("call %s, __temp__%d\n", $1, productionID);
 				productionID = productionID + 1;
