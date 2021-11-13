@@ -2,12 +2,16 @@
    #include<stdio.h>
    #include<string.h>
    #include <stdbool.h>
+   #include<stdlib.h>
    #include <ctype.h>
    void yyerror(const char *msg);
    extern int currLine;
    int myError = 0;
    int otherError = 0;
    bool check = false;
+   bool ism = false;
+   bool isp = false;
+   int decC = 0;
    
    char *identToken;
    int numberToken;
@@ -26,10 +30,13 @@
 }
 
 %type <op_val> var
+%type <op_val> statement
+%type <op_val> declaration
 %type <op_val> vars
 %type <op_val> ident
 %type <op_val> expression
 %type <op_val> expressions
+%type <op_val> comma_sep_expressions
 %type <int_val> multiplicative_expression
 %type <op_val> term
 %start prog_start
@@ -48,7 +55,6 @@
 %token <op_val> NUMBER 
 %token <op_val> IDENT
 %type <op_val> vars-w
-%type <int_val> test
 
 %%
 
@@ -72,12 +78,19 @@ function: function_ident
 };
 
 end_body: END_BODY {
-   printf("endfunc\n");
+   printf("endfunc\n\n");
+   decC = 0;
 }
 
 function_ident: FUNCTION ident {
 
      char *token = identToken;
+	 //printf("%s\n", token);
+	 if (!strcmp(token, "main")){
+		 ism = true;
+		 //printf("bool %d\n", ism);
+	 }
+	 //printf("bool %d\n", ism);
      printf("func %s\n", token);
      strcpy(list_of_function_names[count_names], token);
      count_names++;
@@ -95,7 +108,10 @@ declarations:
 	/* epsilon */
 		{}
 	| declaration SEMICOLON declarations
-		{};
+		{
+			//printf("= %s, $%d\n", $1, decC);
+			//decC++;
+		};
 
 declaration: 
 	IDENT COLON INTEGER
@@ -103,6 +119,13 @@ declaration:
 
        char *token = $1;
        printf(". %s\n", token);
+	   if(!ism){
+		   printf("= %s, $%d\n", $1, decC);
+		   ism = false;
+	   }
+	   
+	   decC++;
+	   $$ = $1;
 
 }
 	| IDENT COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
@@ -118,6 +141,7 @@ statement:
 	char *src  = $3;
 	//printf(". __temp__%d\n", productionID);
 	//printf(". __temp__%d, %s\n", productionID, src);
+	//printf("testing statement %s\n", $1);
 	printf("= %s, __temp__%d\n", dest, productionID-1);
 	//productionID = productionID + 1;
 
@@ -145,12 +169,15 @@ statement:
 		{}
 	| WRITE vars-w
 		{
-			printf(".[]> %s, __temp__%d\n", $2, productionID-1);
+			$$ = $2;
+			//printf(".[]> %s, __temp__%d\n", $2, productionID-1);
 		}
 	| CONTINUE
 		{}
 	| RETURN expression
-		{};
+		{
+			printf("ret __temp__%d\n", productionID-1);
+		};
 
 statements: 
 	statement SEMICOLON/* epsilon */
@@ -161,6 +188,7 @@ statements:
 expression: 
 	multiplicative_expression
 {
+	//printf("mult-e %d\n", $1);
 	$$ = $1; 
 }
 	| multiplicative_expression ADD expression
@@ -171,7 +199,7 @@ expression:
 	printf(". __temp__%d\n", productionID);
 	printf("+ __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
 	productionID = productionID + 1;
-	$$ = "array";
+	$$ = productionID;
 }
 	| multiplicative_expression SUB expression
 {
@@ -188,7 +216,15 @@ expression:
 multiplicative_expression: 
 	term
 		{ 
-			//printf("Test %s\n", $1);
+			//printf("isp %d\n", isp);
+			if(isp){
+				printf(". __temp__%d\n", productionID);
+				printf("call %s, __temp__%d\n", $1, productionID);
+				productionID = productionID + 1;
+				$$ = productionID; 
+				isp = false;
+				break;
+			}
 			if($1 != "array"){
 				printf(". __temp__%d\n", productionID);
 				printf("= __temp__%d, %s\n", productionID, $1);
@@ -216,12 +252,17 @@ multiplicative_expression:
 	| expression DIV multiplicative_expression
 		{ 
 			printf(". __temp__%d\n", productionID, $1);
-			printf("* __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
+			printf("/ __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
 			productionID++;
 			$$ = "SLDKFJDSLKJ"; 
 		}
 	| term MOD multiplicative_expression
-		{ $$ = "SLDKFJDSLKJ"; }
+		{ 
+			printf(". __temp__%d\n", productionID, $1);
+			printf("% __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
+			productionID++;
+			$$ = "SLDKFJDSLKJ";
+		}
 		;
 
 term: 
@@ -240,19 +281,46 @@ term:
 	| SUB L_PAREN expression R_PAREN
 		{ $$ = $3; }
 	| ident L_PAREN expressions R_PAREN
-		{ $$ = $3; };
+		{ 
+			isp = true;
+			//printf("Yo\n");
+			//$$ = 3; 
+		};
 
 expressions: 
+	expression COMMA expressions
+		{
+			printf("param __temp__%d\n", $1-1);
+			if(isp){
+				//printf("isp\n");
+				isp = false;
+			}
+			//printf("%s\n", $1);
+		}
+	| expression
+		{
+			printf("param __temp__%d\n", $1-1);
+			//printf("testing\n");
+		}
 	/* epsilon */
-		{}
-	| comma_sep_expressions
 		{};
+	/*| comma_sep_expressions
+		{
+			//$$="comma";
+		};*/
 
 comma_sep_expressions: 
 	expression
 		{}
 	| expression COMMA comma_sep_expressions
-		{};
+		{
+			printf("Comma\n");
+			if(isp){
+				printf("isp\n");
+				isp = false;
+			}
+			//printf("%s\n", $1);
+		};
 
 bool_exp:
 	relation_and_exp
@@ -320,13 +388,6 @@ var:  ident
 			$$ = "array";
 		};
 
-test: MULT {
-	printf("mult test\n");
-}
-| {
-	printf("mult\n");
-};
-
 vars:
 	var
 		{
@@ -338,8 +399,14 @@ vars:
 vars-w:
 	ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET
 	{
+		printf(".[]> %s, __temp__%d\n", $1, productionID-1);
 		$$ = $1;
 	};
+	| ident
+	{
+		printf(".> %s\n", $1, productionID-1);
+		$$ = $1;
+	}
 
 %%
 
