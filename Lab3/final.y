@@ -14,6 +14,7 @@
    bool l = false;
    bool b = false;
    bool f = false;
+   bool sawmain = false;
    int recent = 0;
    //char* chArr;
    int decC = 0;
@@ -28,7 +29,9 @@
    int productionID = 0;
 
    char list_of_function_names[100][100];
+   char list_of_vars[100][100];
    int  count_names = 0;
+   int count_vars = 0;
 
 //#define YYDEBUG 1
 //yydebug=1;
@@ -90,6 +93,15 @@ function: function_ident
 };
 
 end_body: END_BODY {
+	int i = 0;
+	//bool invar = false;
+	/*for(i = 0;  i < count_vars; ++i){
+		printf("arr test %s\n", list_of_vars[i]);
+	}*/
+
+	if(!sawmain){
+		printf("Error: No main function defined\n");
+	}
    printf("endfunc\n\n");
    decC = 0;
 }
@@ -97,14 +109,17 @@ end_body: END_BODY {
 function_ident: FUNCTION ident {
 
      char *token = identToken;
+	 char *t = $2;
 	 //printf("%s\n", token);
 	 if (!strcmp(token, "main")){
 		 ism = true;
+		 sawmain = true;
 		 //printf("bool %d\n", ism);
 	 }
 	 //printf("bool %d\n", ism);
      printf("func %s\n", token);
-     strcpy(list_of_function_names[count_names], token);
+     strcpy(list_of_function_names[count_names], t);
+	 //printf("test %s\n", list_of_function_names[0]);
      count_names++;
 }
 
@@ -128,8 +143,10 @@ declarations:
 declaration: 
 	IDENT COLON INTEGER
 {
-
+	   //printf("ident test %s\n", $1);
        char *token = $1;
+	   strcpy(list_of_vars[count_vars], token);
+	   count_vars++;
        printf(". %s\n", token);
 	   if(!ism){
 		   printf("= %s, $%d\n", $1, decC);
@@ -143,6 +160,8 @@ declaration:
 	| IDENT COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
 		{
 			char *token = $1;
+			strcpy(list_of_vars[count_vars], token);
+	   		count_vars++;
        		printf(".[] %s, %s\n", token, $5);
 		};
 
@@ -154,6 +173,20 @@ statement:
 	//printf(". __temp__%d\n", productionID);
 	//printf(". __temp__%d, %s\n", productionID, src);
 	//printf("testing statement %s\n", $1);
+
+	int i = 0;
+	bool invar = false;
+	for(i = 0;  i < count_vars; ++i){
+		//printf("arr test %s\n", list_of_vars[i]);
+		if(!strcmp($1, list_of_vars[i])){
+			invar = true;
+			//printf("invar test %s\n", list_of_vars[i]);
+		}
+	}
+	if(!invar){
+		printf("Error: Variable not defined %s\n", $1);
+	}
+
 	printf("= %s, __temp__%d\n", dest, productionID-1);
 	//productionID = productionID + 1;
 
@@ -165,6 +198,20 @@ statement:
 	char *src  = $3;
 	//printf(". __temp__%d\n", productionID);
 	//printf(". __temp__%d, %s\n", productionID, src);
+
+	int i = 0;
+	bool invar = false;
+	for(i = 0;  i < count_vars; ++i){
+		//printf("arr test %s\n", list_of_vars[i]);
+		if(!strcmp($1, list_of_vars[i])){
+			invar = true;
+			//printf("invar test %s\n", list_of_vars[i]);
+		}
+	}
+	if(!invar){
+		printf("Error: Variable not defined %s\n", $1);
+	}
+
 	printf("[]= %s, __temp__%d, __temp__%d\n", dest, $3-1, productionID-1);
 	//productionID = productionID + 1;
 }
@@ -467,6 +514,20 @@ var-s:  ident
 		//printf(". __temp__%d, %s\n", productionID, $1);
 		//printf("= %s, __temp__%d\n", $1, productionID);
 		//printf("l check %d\n", l);
+
+		int i = 0;
+		bool invar = false;
+		for(i = 0;  i < count_vars; ++i){
+			//printf("arr test %s\n", list_of_vars[i]);
+			if(!strcmp($1, list_of_vars[i])){
+				invar = true;
+				//printf("invar test %s\n", list_of_vars[i]);
+			}
+		}
+		if(!invar){
+			printf("Error: Variable not defined %s\n", $1);
+		}
+
 		$$ = productionID; 
 
 	}
@@ -482,6 +543,20 @@ var-s:  ident
 			//printf("%d\n", productionID);
 			l = true;
 			//chArr = 'array';
+
+			int i = 0;
+			bool invar = false;
+			for(i = 0;  i < count_vars; ++i){
+				//printf("arr test %s\n", list_of_vars[i]);
+				if(!strcmp($1, list_of_vars[i])){
+					invar = true;
+					//printf("invar test %s\n", list_of_vars[i]);
+				}
+			}
+			if(!invar){
+				printf("Error: Variable not defined %s\n", $1);
+			}
+
 			$$ = productionID;
 		};
 
@@ -492,6 +567,20 @@ var:  ident
 		//printf(". __temp__%d, %s\n", productionID, $1);
 		//printf("= %s, __temp__%d\n", $1, productionID);
 		//printf("l check %d\n", l);
+
+		int i = 0;
+		bool invar = false;
+		for(i = 0;  i < count_vars; ++i){
+			//printf("arr test %s\n", list_of_vars[i]);
+			if(!strcmp($1, list_of_vars[i])){
+				invar = true;
+				//printf("invar test %s\n", list_of_vars[i]);
+			}
+		}
+		if(!invar){
+			printf("Error: Variable not defined %s\n", $1);
+		}
+
 		$$ = $1; 
 
 	}
@@ -507,6 +596,20 @@ var:  ident
 			//printf("%d\n", productionID);
 			l = true;
 			//chArr = 'array';
+
+			int i = 0;
+			bool invar = false;
+			for(i = 0;  i < count_vars; ++i){
+				//printf("arr test %s\n", list_of_vars[i]);
+				if(!strcmp($1, list_of_vars[i])){
+					invar = true;
+					//printf("invar test %s\n", list_of_vars[i]);
+				}
+			}
+			if(!invar){
+				printf("Error: Variable not defined %s\n", $1);
+			}
+
 			$$ = "array";
 		};
 
