@@ -18,6 +18,8 @@
    int recent = 0;
    //char* chArr;
    int decC = 0;
+   char arrayOfArraysOfChars[254][254];
+   int charArrayIndex = 0;
 
    struct termS {
 	   char* s;
@@ -75,7 +77,17 @@
 
 prog_start: 
 	functions
-		{};
+		{
+			int i = 0;
+			//bool invar = false;
+			/*for(i = 0;  i < count_vars; ++i){
+				printf("arr test %s\n", list_of_vars[i]);
+			}*/
+
+			if(!sawmain){
+				printf("Error: No main function defined\n");
+			}
+		};
 
 functions: 
 	/* epsilon */
@@ -93,21 +105,13 @@ function: function_ident
 };
 
 end_body: END_BODY {
-	int i = 0;
-	//bool invar = false;
-	/*for(i = 0;  i < count_vars; ++i){
-		printf("arr test %s\n", list_of_vars[i]);
-	}*/
-
-	if(!sawmain){
-		printf("Error: No main function defined\n");
-	}
    printf("endfunc\n\n");
    decC = 0;
 }
 
 function_ident: FUNCTION ident {
 
+	 charArrayIndex = 0;
      char *token = identToken;
 	 char *t = $2;
 	 //printf("%s\n", token);
@@ -145,6 +149,19 @@ declaration:
 {
 	   //printf("ident test %s\n", $1);
        char *token = $1;
+	   // variable error checking start
+	   if (charArrayIndex > 0) {
+		   int x = 0;
+		   for (x = 0; x < charArrayIndex; x++) {
+			   if (!strcmp(token, arrayOfArraysOfChars[x])) {
+				   printf("Error: Variable with name '%s' has already declared.\n", token);
+				   exit(0);
+			   }
+		   }
+	   }
+	   strcpy(arrayOfArraysOfChars[charArrayIndex], token);
+   	   charArrayIndex++;
+	   // variable error checking end
 	   strcpy(list_of_vars[count_vars], token);
 	   count_vars++;
        printf(". %s\n", token);
@@ -160,6 +177,22 @@ declaration:
 	| IDENT COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
 		{
 			char *token = $1;
+			// variable error checking start
+			if (charArrayIndex > 0) {
+				int x = 0;
+				for (x = 0; x < charArrayIndex; x++) {
+					if (!strcmp(token, arrayOfArraysOfChars[x])) {
+						printf("Error: Variable with name '%s' has already declared.\n", token);
+						exit(0);
+					}
+				}
+			}
+			strcpy(arrayOfArraysOfChars[charArrayIndex], token);
+			charArrayIndex++;
+			// variable error checking end
+			char *array_size = $5;
+			int array_size_error = atoi(array_size);
+			if (array_size_error <= 0) { printf("Error: Array '%s[%s]' cannot be of size <= 0.\n", token, $5); exit(0); }
 			strcpy(list_of_vars[count_vars], token);
 	   		count_vars++;
        		printf(".[] %s, %s\n", token, $5);
