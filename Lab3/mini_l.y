@@ -84,8 +84,9 @@ prog_start:
 		{
 			int i = 0;
 			if(!sawmain){
-				printf("Error: No main function defined\n");
-			}
+				printf("Error: No main function defined.\n");
+				exit(0);
+			}	
 		};
 
 functions: 
@@ -143,14 +144,7 @@ declarations:
 declaration: 
 	IDENT COLON INTEGER
 {
-           char *token = $1;
-	   int z = 0;
-	   for (z = 0; z < 27; z++) {
-		   if (!strcmp(token, keywords[z])) {
-				   printf("Error: Variable '%s' is a keyword in the language.\n", token);
-				   exit(0);
-			   }
-	   }
+        char *token = $1;
 		if (error_4_index > 0) {
 		   int x = 0;
 		   for (x = 0; x < error_4_index; x++) {
@@ -194,7 +188,10 @@ declaration:
 			count_arrays++;
 			char *array_size = $5;
 			int array_size_error = atoi(array_size);
-			if (array_size_error <= 0) { printf("Error: Array '%s[%s]' cannot be of size <= 0.\n", token, $5); exit(0); }
+			if (array_size_error <= 0) { 
+				printf("Error: Array '%s[%s]' cannot be of size <= 0.\n", token, $5); 
+				exit(0); 
+			}
 			strcpy(list_of_vars[count_vars], token);
 	   		count_vars++;
        		        printf(".[] %s, %s\n", token, $5);
@@ -222,6 +219,7 @@ statement:
 	}
 	if(!invar){
 		printf("Error: Variable not defined %s\n", $1);
+		exit(0);
 	}
 	printf("= %s, __temp__%d\n", dest, productionID-1);
 
@@ -247,7 +245,8 @@ statement:
 		}
 	}
 	if(!invar){
-		printf("Error: Variable not defined %s\n", $1);
+		printf("Error: Variable not defined %s\n.", $1);
+		exit(0);
 	}
 	printf("[]= %s, __temp__%d, __temp__%d\n", dest, $3-1, productionID-1);
 }
@@ -514,9 +513,9 @@ var-s:  ident
 		int x = 0;
 		for (x = 0; x < count_arrays; x++) {
 			if (!strcmp(token, list_of_arrays[x])) {
-						printf("Error: Specified an array index for '%s' when using a regular integer variable.\n", token);
-						exit(0);
-					}
+				printf("Error: Specified an array index for '%s' when using a regular integer variable.\n", token);
+				exit(0);
+			}
 		}
 		int i = 0;
 		bool invar = false;
@@ -526,7 +525,8 @@ var-s:  ident
 			}
 		}
 		if(!invar){
-			printf("Error: Variable not defined %s\n", $1);
+			printf("Error: Variable not defined %s\n.", $1);
+			exit(0);
 		}
 
 		$$ = productionID; 
@@ -556,7 +556,8 @@ var-s:  ident
 				}
 			}
 			if(!invar){
-				printf("Error: Variable not defined %s\n", $1);
+				printf("Error: Variable not defined %s\n.", $1);
+				exit(0);
 			}
 
 			$$ = productionID;
@@ -580,7 +581,8 @@ var:  ident
 			}
 		}
 		if(!invar){
-			printf("Error: Variable not defined %s\n", $1);
+			printf("Error: Variable not defined %s\n.", $1);
+			exit(0);
 		}
 
 		$$ = $1; 
@@ -610,7 +612,8 @@ var:  ident
 				}
 			}
 			if(!invar){
-				printf("Error: Variable not defined %s\n", $1);
+				printf("Error: Variable not defined %s\n.", $1);
+				exit(0);
 			}
 
 			$$ = "array";
