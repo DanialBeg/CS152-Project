@@ -1,9 +1,11 @@
 %{
    #include<stdio.h>
+   #include <unistd.h>
    #include<string.h>
    #include <stdbool.h>
    #include<stdlib.h>
    #include <ctype.h>
+   #include <libgen.h>
    void yyerror(const char *msg);
    extern int currLine;
    int myError = 0;
@@ -20,6 +22,7 @@
    int decC = 0;
    char array_for_error_4[254][254];
    int error_4_index = 0;
+   char keywords[27][27];
 
    struct termS {
 	   char* s;
@@ -32,8 +35,13 @@
 
    char list_of_function_names[100][100];
    char list_of_vars[100][100];
-   int  count_names = 0;
+   char list_of_integers[100][100];
+   char list_of_arrays[100][100];
+
+   int count_names = 0;
    int count_vars = 0;
+   int count_integers = 0;
+   int count_arrays = 0;
 
 //#define YYDEBUG 1
 //yydebug=1;
@@ -67,7 +75,7 @@
 %token SUB ADD MULT DIV MOD
 %token EQ NEQ LT GT LTE GTE
 %token SEMICOLON COLON COMMA L_PAREN R_PAREN ASSIGN
-%token <op_val> NUMBER 
+%token <op_val> NUMBER L_SQUARE_BRACKET
 %token <op_val> IDENT
 %type <op_val> vars-w
 %type <int_val> term-s
@@ -83,7 +91,6 @@ prog_start:
 			/*for(i = 0;  i < count_vars; ++i){
 				printf("arr test %s\n", list_of_vars[i]);
 			}*/
-
 			if(!sawmain){
 				printf("Error: No main function defined\n");
 			}
@@ -111,7 +118,38 @@ end_body: END_BODY {
 
 function_ident: FUNCTION ident {
 
+	 //define keywords start
+	 strcpy(keywords[0], "function");
+	strcpy(keywords[1], "beginparams");
+	strcpy(keywords[2], "endparams");   
+	strcpy(keywords[3], "beginlocals");
+	strcpy(keywords[4], "endlocals");
+	strcpy(keywords[5], "beginbody");
+	strcpy(keywords[6], "endbody");
+	strcpy(keywords[7], "integer");
+	strcpy(keywords[8], "array");
+	strcpy(keywords[9], "of");
+	strcpy(keywords[10], "if");
+	strcpy(keywords[11], "endif");
+	strcpy(keywords[12], "else");
+	strcpy(keywords[13], "while");
+	strcpy(keywords[14], "do");
+	strcpy(keywords[15], "beginloop");
+	strcpy(keywords[16], "endloop");
+	strcpy(keywords[17], "read");
+	strcpy(keywords[18], "write");
+	strcpy(keywords[19], "and");
+	strcpy(keywords[20], "or");
+	strcpy(keywords[21], "not");
+	strcpy(keywords[22], "true");
+	strcpy(keywords[23], "false");   
+	strcpy(keywords[24], "return");
+	strcpy(keywords[25], "continue");   
+	strcpy(keywords[26], "then");
+	 //define keywords end
 	 error_4_index = 0;
+	 count_arrays = 0;
+	 count_integers = 0;
      char *token = identToken;
 	 char *t = $2;
 	 //printf("%s\n", token);
@@ -150,7 +188,14 @@ declaration:
 	   //printf("ident test %s\n", $1);
        char *token = $1;
 	   // variable error checking start
-	   if (error_4_index > 0) {
+	   int z = 0;
+	   for (z = 0; z < 27; z++) {
+		   if (!strcmp(token, keywords[z])) {
+				   printf("Error: Variable '%s' is a keyword in the language.\n", token);
+				   exit(0);
+			   }
+	   }
+		if (error_4_index > 0) {
 		   int x = 0;
 		   for (x = 0; x < error_4_index; x++) {
 			   if (!strcmp(token, array_for_error_4[x])) {
@@ -160,7 +205,9 @@ declaration:
 		   }
 	   }
 	   strcpy(array_for_error_4[error_4_index], token);
+	   strcpy(list_of_integers[count_integers], token);
    	   error_4_index++;
+	   count_integers++;
 	   // variable error checking end
 	   strcpy(list_of_vars[count_vars], token);
 	   count_vars++;
@@ -188,7 +235,9 @@ declaration:
 				}
 			}
 			strcpy(array_for_error_4[error_4_index], token);
+			strcpy(list_of_arrays[count_arrays], token);
 			error_4_index++;
+			count_arrays++;
 			// variable error checking end
 			char *array_size = $5;
 			int array_size_error = atoi(array_size);
@@ -201,6 +250,14 @@ declaration:
 statement: 
 	ident ASSIGN expression
 {
+	char *token = $1;
+	int x = 0;
+	for (x = 0; x < count_arrays; x++) {
+		if (!strcmp(token, list_of_arrays[x])) {
+					printf("Error: Forgot to specify an array index for '%s' when using an array variable.\n", token);
+					exit(0);
+				}
+	}
 	char *dest = $1;
 	char *src  = $3;
 	//printf(". __temp__%d\n", productionID);
@@ -227,6 +284,14 @@ statement:
 
 | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET ASSIGN expression
 {
+	char *token = $1;
+	int x = 0;
+	for (x = 0; x < count_integers; x++) {
+		if (!strcmp(token, list_of_integers[x])) {
+					printf("Error: Specified an array index for '%s' when using a regular integer variable.\n", token);
+					exit(0);
+				}
+	}
 	char *dest = $1;
 	char *src  = $3;
 	//printf(". __temp__%d\n", productionID);
@@ -558,6 +623,14 @@ comp:
 
 var-s:  ident
 	{ 
+		char *token = $1;
+		int x = 0;
+		for (x = 0; x < count_arrays; x++) {
+			if (!strcmp(token, list_of_arrays[x])) {
+						printf("Error: Specified an array index for '%s' when using a regular integer variable.\n", token);
+						exit(0);
+					}
+		}
 		//printf("var ident\n");
 		//printf(". __temp__%d\n", productionID);
 		//printf(". __temp__%d, %s\n", productionID, $1);
@@ -582,6 +655,14 @@ var-s:  ident
 	}
 	| ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET
 		{
+			char *token = $1;
+			int x = 0;
+			for (x = 0; x < count_integers; x++) {
+				if (!strcmp(token, list_of_integers[x])) {
+							printf("Error: Specified an array index for '%s' when using a regular integer variable.\n", token);
+							exit(0);
+						}
+			}
 			//printf("var []\n");
 			printf(". __temp__%d\n", productionID);
 			int temp_n = $3;
@@ -616,7 +697,14 @@ var:  ident
 		//printf(". __temp__%d, %s\n", productionID, $1);
 		//printf("= %s, __temp__%d\n", $1, productionID);
 		//printf("l check %d\n", l);
-
+		char *token = $1;
+		int x = 0;
+		for (x = 0; x < count_arrays; x++) {
+			if (!strcmp(token, list_of_arrays[x])) {
+						printf("Error: Forgot to specify an array index for '%s' when using an array variable.\n", token);
+						exit(0);
+					}
+		}
 		int i = 0;
 		bool invar = false;
 		for(i = 0;  i < count_vars; ++i){
@@ -635,6 +723,14 @@ var:  ident
 	}
 	| ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET
 		{
+			char *token = $1;
+			int x = 0;
+			for (x = 0; x < count_integers; x++) {
+				if (!strcmp(token, list_of_integers[x])) {
+							printf("Error: Specified an array index for '%s' when using a regular integer variable.\n", token);
+							exit(0);
+						}
+			}
 			//printf("var []\n");
 			printf(". __temp__%d\n", productionID);
 			int temp_n = $3;
@@ -673,11 +769,27 @@ vars:
 vars-w:
 	ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET
 	{
+		char *token = $1;
+			int x = 0;
+			for (x = 0; x < count_integers; x++) {
+				if (!strcmp(token, list_of_integers[x])) {
+							printf("Error: Specified an array index for '%s' when using a regular integer variable.\n", token);
+							exit(0);
+						}
+			}
 		printf(".[]> %s, __temp__%d\n", $1, productionID-1);
 		$$ = $1;
 	};
 	| ident
-	{
+	{	
+		char *token = $1;
+		int x = 0;
+		for (x = 0; x < count_arrays; x++) {
+			if (!strcmp(token, list_of_arrays[x])) {
+						printf("Error: Forgot to specify an array index for '%s' when using an array variable.\n", token);
+						exit(0);
+					}
+		}
 		printf(".> %s\n", $1, productionID-1);
 		$$ = $1;
 	}
