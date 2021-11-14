@@ -128,7 +128,6 @@ function_ident: FUNCTION ident {
 ident:
 	IDENT
 		{ 
-			//printf("= %s, __temp__%d\n", $1, productionID);
 			$$ = $1; 
 		};
 
@@ -136,10 +135,7 @@ declarations:
 	/* epsilon */
 		{}
 	| declaration SEMICOLON declarations
-		{
-			//printf("= %s, $%d\n", $1, decC);
-			//decC++;
-		};
+		{};
 
 declaration: 
 	IDENT COLON INTEGER
