@@ -84,7 +84,7 @@ prog_start:
 		{
 			int i = 0;
 			if(!sawmain){
-				printf("Line %d Error: No main function defined.\n", currLine);
+				printf("Error line %d: no main function defined.\n", currLine);
 				exit(0);
 			}	
 		};
@@ -145,13 +145,7 @@ declaration:
 		   int x = 0;
 		   for (x = 0; x < error_4_index; x++) {
 			   if (!strcmp(token, array_for_error_4[x])) {
-				   //char term[10000];
-				   //strcpy(term, 'Error: Variable with name\0');
-				   //strcat(term, token);
-				   //strcat(term, "" has already declared.\n");
-				   //char* term = "Error: Variable with name"  + token +  " has already declared.\n";
-				   printf("Line %d Error: Variable with name '%s' has already declared.\n", currLine, token);
-				   //yyerror(term);
+				   printf("Error line %d: variable with name '%s' has already declared.\n", currLine, token);
 				   exit(0);
 			   }
 		   }
@@ -179,8 +173,7 @@ declaration:
 				int x = 0;
 				for (x = 0; x < error_4_index; x++) {
 					if (!strcmp(token, array_for_error_4[x])) {
-						printf("Line %d Error: Variable with name '%s' has already declared.\n", currLine, token);
-						//yyerror("Error: Variable has already been declared.\n");
+						printf("Error line %d: variable with name '%s' has already declared.\n", currLine, token);
 						exit(0);
 					}
 				}
@@ -192,8 +185,7 @@ declaration:
 			char *array_size = $5;
 			int array_size_error = atoi(array_size);
 			if (array_size_error <= 0) { 
-				printf("Line %d Error: Array '%s[%s]' cannot be of size <= 0.\n", token, currLine, $5); 
-				//yyerror("Error: Array cannot be of size <= 0.\n");
+				printf("Error line %d: array '%s[%s]' cannot be of size <= 0.\n", currLine, token, $5); 
 				exit(0); 
 			}
 			strcpy(list_of_vars[count_vars], token);
@@ -208,8 +200,7 @@ statement:
 	int x = 0;
 	for (x = 0; x < count_arrays; x++) {
 		if (!strcmp(token, list_of_arrays[x])) {
-			printf("Line %d Error: Forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
-			//yyerror("Error: Forgot to specify an array index when using an array variable.\n");
+			printf("Error line %d: forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
 			exit(0);
 		}
 	}
@@ -223,7 +214,7 @@ statement:
 		}
 	}
 	if(!invar){
-		printf("Line %d Error: Variable not defined %s\n", currLine, $1);
+		printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 		exit(0);
 	}
 	printf("= %s, __temp__%d\n", dest, productionID-1);
@@ -236,7 +227,7 @@ statement:
 	int x = 0;
 	for (x = 0; x < count_integers; x++) {
 		if (!strcmp(token, list_of_integers[x])) {
-			printf("Line %d Error: Specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
+			printf("Error line %d: specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
 			exit(0);
 		}
 	}
@@ -250,7 +241,7 @@ statement:
 		}
 	}
 	if(!invar){
-		printf("Line %d Error: Variable not defined %s\n.", currLine, $1);
+		printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 		exit(0);
 	}
 	printf("[]= %s, __temp__%d, __temp__%d\n", dest, $3-1, productionID-1);
@@ -327,7 +318,7 @@ multiplicative_expression:
 						}
 					}
 					if (!matches) {
-						printf("Line %d Error: Function with name '%s' does not exist.\n", currLine, func_call);
+						printf("Error line %d: function with name '%s' does not exist.\n", currLine, func_call);
 						exit(0);
 					}
 				}
@@ -518,7 +509,7 @@ var-s:  ident
 		int x = 0;
 		for (x = 0; x < count_arrays; x++) {
 			if (!strcmp(token, list_of_arrays[x])) {
-				printf("Line %d Error: Specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
+				printf("Error line %d: specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
 				exit(0);
 			}
 		}
@@ -530,7 +521,7 @@ var-s:  ident
 			}
 		}
 		if(!invar){
-			printf("Line %d Error: Variable not defined %s\n.", currLine, $1);
+			printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 			exit(0);
 		}
 
@@ -543,7 +534,7 @@ var-s:  ident
 			int x = 0;
 			for (x = 0; x < count_integers; x++) {
 				if (!strcmp(token, list_of_integers[x])) {
-					printf("Line %d Error: Specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
+					printf("Error line %d: specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
 					exit(0);
 				}
 			}
@@ -561,7 +552,7 @@ var-s:  ident
 				}
 			}
 			if(!invar){
-				printf("Line %d Error: Variable not defined %s\n.", currLine, $1);
+				printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 				exit(0);
 			}
 
@@ -574,7 +565,7 @@ var:  ident
 		int x = 0;
 		for (x = 0; x < count_arrays; x++) {
 			if (!strcmp(token, list_of_arrays[x])) {
-				printf("Line %d Error: Forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
+				printf("Error line %d: forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
 				exit(0);
 			}
 		}
@@ -586,7 +577,7 @@ var:  ident
 			}
 		}
 		if(!invar){
-			printf("Line %d Error: Variable not defined %s\n.", currLine, $1);
+			printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 			exit(0);
 		}
 
@@ -599,7 +590,7 @@ var:  ident
 			int x = 0;
 			for (x = 0; x < count_integers; x++) {
 				if (!strcmp(token, list_of_integers[x])) {
-					printf("Line %d Error: Specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
+					printf("Error line %d: specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
 					exit(0);
 				}
 			}
@@ -637,7 +628,7 @@ vars-w:
 			int x = 0;
 			for (x = 0; x < count_integers; x++) {
 				if (!strcmp(token, list_of_integers[x])) {
-					printf("Line %d Error: Specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
+					printf("Error line %d: specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
 					exit(0);
 				}
 			}
@@ -650,7 +641,7 @@ vars-w:
 		int x = 0;
 		for (x = 0; x < count_arrays; x++) {
 			if (!strcmp(token, list_of_arrays[x])) {
-				printf("Line %d Error: Forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
+				printf("Error line %d: forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
 				exit(0);
 			}
 		}
