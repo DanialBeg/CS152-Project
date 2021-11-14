@@ -21,6 +21,7 @@
    int decC = 0;
    char array_for_error_4[254][254];
    int error_4_index = 0;
+   int expn = 0;
    
    char *identToken;
    int numberToken;
@@ -346,6 +347,8 @@ statement:
 | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET ASSIGN expression
 {
 	char *token = $1;
+	//printf("ident arr %s\n", expn);
+	expn = 0;
 	if ($3 < 0) {
 		printf("Error line %d: array index for '%s[%d]' must be an unsigned integer.\n", currLine, token, $3);
 		exit(0);
@@ -521,10 +524,16 @@ term:
 		{ $$ = "SLDKFJDSLKJ"; }
 	| NUMBER
 		{ 
+			int tempnum = $1;
+			expn = tempnum;
 			$$ = $1; 
 		}
 	| SUB NUMBER
-		{ $$ = $2; }
+		{ 
+			printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
+			exit(0);
+			$$ = $2; 
+		}
 	| L_PAREN expression R_PAREN
 		{}
 	| SUB L_PAREN expression R_PAREN
