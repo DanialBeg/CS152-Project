@@ -266,6 +266,7 @@ declaration:
 				strcpy(list_of_vars[count_vars], token);
 				count_vars++;
 				printf(".[] %s, %s\n", token, $5);
+				idval[0] = '\0';
 			}
 			
 			//$$ = $1;
