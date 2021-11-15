@@ -77,8 +77,8 @@
 %token <op_val> IDENT
 %type <op_val> vars-w
 %type <op_val> arrc
-%type <int_val> term-s
 %type <op_val> var-s
+%type <op_val> nump
 
 %%
 
@@ -286,14 +286,11 @@ statement:
 
 }
 
-| ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET ASSIGN expression
+| ident L_SQUARE_BRACKET nump R_SQUARE_BRACKET ASSIGN expression
 {
 	char *token = $1;
 	expn = 0;
-	if ($3 < 0) {
-		printf("Error line %d: array index for '%s[%d]' must be an unsigned integer.\n", currLine, token, $3);
-		exit(0);
-	}
+
 	int x = 0;
 	for (x = 0; x < count_integers; x++) {
 		if (!strcmp(token, list_of_integers[x])) {
@@ -338,6 +335,92 @@ statement:
 			printf("ret __temp__%d\n", productionID-1);
 			b = true;
 		};
+
+nump:
+	NUMBER
+	{
+		if(isp){
+			char *func_call = $1;
+			if (count_names > 0) {
+				int x = 0;
+				bool matches = false;
+				for (x = 0; x < count_names; x++) {
+					if (!strcmp(func_call, list_of_function_names[x])) {
+						matches = true;
+					}
+				}
+				if (!matches) {
+					printf("Error line %d: function with name '%s' does not exist.\n", currLine, func_call);
+					exit(0);
+				}
+			}
+			printf(". __temp__%d\n", productionID);
+			printf("call %s, __temp__%d\n", $1, productionID);
+			productionID = productionID + 1;
+			$$ = productionID; 
+			isp = false;
+			b = true;
+			break;
+		}
+		if($1 != "array"){
+			printf(". __temp__%d\n", productionID);
+			printf("= __temp__%d, %s\n", productionID, $1);
+			productionID = productionID + 1;
+			$$ = productionID; 
+			l = false;
+			break;
+		}
+		else{
+			$$ = productionID;
+		}		
+	}
+	| SUB NUMBER 
+	{
+		printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
+		exit(0);
+	}
+	| var
+	{
+		if(isp){
+			char *func_call = $1;
+			if (count_names > 0) {
+				int x = 0;
+				bool matches = false;
+				for (x = 0; x < count_names; x++) {
+					if (!strcmp(func_call, list_of_function_names[x])) {
+						matches = true;
+					}
+				}
+				if (!matches) {
+					printf("Error line %d: function with name '%s' does not exist.\n", currLine, func_call);
+					exit(0);
+				}
+			}
+			printf(". __temp__%d\n", productionID);
+			printf("call %s, __temp__%d\n", $1, productionID);
+			productionID = productionID + 1;
+			$$ = productionID; 
+			isp = false;
+			b = true;
+			break;
+		}
+		if($1 != "array"){
+			printf(". __temp__%d\n", productionID);
+			printf("= __temp__%d, %s\n", productionID, $1);
+			productionID = productionID + 1;
+			$$ = productionID; 
+			l = false;
+			break;
+		}
+		else{
+			$$ = productionID;
+		}		
+	}
+	| SUB var
+	{
+		printf("Error line %d: Value '-%s' cannot be negative for array index.\n", currLine, $2);
+		exit(0);
+	};
 
 statements: 
 	statement SEMICOLON
@@ -462,7 +545,7 @@ term:
 			$$ = $1;
 		}
 	| SUB var
-		{ $$ = "SLDKFJDSLKJ"; }
+		{ $$ = $2; }
 	| NUMBER
 		{ 
 			int tempnum = $1;
@@ -475,28 +558,6 @@ term:
 			//exit(0);
 			$$ = $2; 
 		}
-	| L_PAREN expression R_PAREN
-		{}
-	| SUB L_PAREN expression R_PAREN
-		{ $$ = $3; }
-	| ident L_PAREN expressions R_PAREN
-		{ 
-			isp = true;
-		};
-
-term-s: 
-	var
-		{ 
-			$$ = $1; 
-		}
-	| SUB var
-		{ $$ = "SLDKFJDSLKJ"; }
-	| NUMBER
-		{ 
-			$$ = $1; 
-		}
-	| SUB NUMBER
-		{ $$ = $2; }
 	| L_PAREN expression R_PAREN
 		{}
 	| SUB L_PAREN expression R_PAREN
