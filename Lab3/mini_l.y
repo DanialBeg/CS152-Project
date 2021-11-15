@@ -22,8 +22,6 @@
    char array_for_error_4[254][254];
    int error_4_index = 0;
    int expn = 0;
-   int negN = 0;
-   char negV[1000];
    
    char *identToken;
    int numberToken;
@@ -41,7 +39,6 @@
    int count_integers = 0;
    int count_arrays = 0;
    char idval[1000];
-   //idval[0] = 0;
 
 %}
 
@@ -80,8 +77,8 @@
 %token <op_val> IDENT
 %type <op_val> vars-w
 %type <op_val> arrc
+%type <int_val> term-s
 %type <op_val> var-s
-%type <op_val> nump
 
 %%
 
@@ -90,13 +87,12 @@ prog_start:
 		{
 			int i = 0;
 			if(!sawmain){
-				printf("Error line %d: No main function defined.\n", currLine);
+				printf("Error line %d: no main function defined.\n", currLine);
 				exit(0);
 			}	
 		};
 
 functions: 
-	/* epsilon */
 		{}
 	| function functions
 		{};
@@ -134,22 +130,16 @@ function_ident: FUNCTION ident {
 ident:
 	IDENT
 		{ 
-			//printf("hey\n");
 			$$ = $1; 
 		};
 
 declarations: 
-	/* epsilon */
-		{
-			
-		}
+		{}
 	| declaration SEMICOLON declarations
-		{
-		};
+		{};
 
 declaration: 
 	identifiers COLON INTEGER {
-		//printf("hi\n");
 		char *token = $1;
 		if (error_4_index > 0) {
 			int x = 0;
@@ -173,8 +163,6 @@ declaration:
 		}
 
 		decC++;
-		//printf("dec idval %s\n", idval);
-		//idval = '\0';
 		if(strcmp(idval, "")){
 			char *token = idval;
 			if (error_4_index > 0) {
@@ -212,7 +200,6 @@ declaration:
 				for (x = 0; x < error_4_index; x++) {
 					if (!strcmp(token, array_for_error_4[x])) {
 						printf("Error line %d: variable with name '%s' has already declared.\n", currLine, token);
-						//yyerror("Error: Variable has already been declared.\n");
 						exit(0);
 					}
 				}
@@ -225,7 +212,6 @@ declaration:
 			int array_size_error = atoi(array_size);
 			if (array_size_error <= 0) { 
 				printf("Error line %d: array '%s[%s]' cannot be of size <= 0.\n", currLine, token, $5); 
-				//yyerror("Error: Array cannot be of size <= 0.\n");
 				exit(0); 
 			}
 			strcpy(list_of_vars[count_vars], token);
@@ -239,7 +225,6 @@ declaration:
 					for (x = 0; x < error_4_index; x++) {
 						if (!strcmp(token, array_for_error_4[x])) {
 							printf("Error line %d: variable with name '%s' has already declared.\n", currLine, token);
-							//yyerror("Error: Variable has already been declared.\n");
 							exit(0);
 						}
 					}
@@ -252,7 +237,6 @@ declaration:
 				int array_size_error = atoi(array_size);
 				if (array_size_error <= 0) { 
 					printf("Error line %d: array '%s[%s]' cannot be of size <= 0.\n", token, currLine, $5); 
-					//yyerror("Error: Array cannot be of size <= 0.\n");
 					exit(0); 
 				}
 				strcpy(list_of_vars[count_vars], token);
@@ -260,61 +244,18 @@ declaration:
 				printf(".[] %s, %s\n", token, $5);
 				idval[0] = '\0';
 			}
-			
-			//$$ = $1;
 		};
 
 identifiers: 
 	ident
 		{
-			//printf("yo\n");
-
 			$$ = $1;
 		}
 	| ident COMMA identifiers
 		{
 			char *tempident = $3;
-			/*
-			strcpy(list_of_idents[count_ident], tempident);
-			//list_of_idents[count_ident] = $3;
-			count_ident++;
-			//printf("ident %s\n", $3);
-			//printf("ident arr %s\n", list_of_idents[0]);
-			
-			//printf("heyhey\n");
-			//printf("identifiers %s\n", $3);
-			printf(". %s\n", $3);
-			if(!ism){
-				printf("= %s, $%d\n", $1, decC);
-				//ism = false;
-			}
-			char *token = $3;
-			if (error_4_index > 0) {
-				int x = 0;
-				for (x = 0; x < error_4_index; x++) {
-					if (!strcmp(token, array_for_error_4[x])) {
-						//char term[10000];
-						//strcpy(term, 'Error: Variable with name\0');
-						//strcat(term, token);
-						//strcat(term, "" has already declared.\n");
-						//char* term = "Error: Variable with name"  + token +  " has already declared.\n";
-						printf("Error line %d: variable with name '%s' has already declared.\n", currLine, token);
-						//yyerror(term);
-						exit(0);
-					}
-				}
-			}
-			strcpy(array_for_error_4[error_4_index], token);
-			strcpy(list_of_integers[count_integers], token);
-			error_4_index++;
-			count_integers++;
-			strcpy(list_of_vars[count_vars], token);
-			count_vars++;
-			*/
 			strcpy(idval, tempident);
-			//printf("idval %s\n", idval);
 			$$ = $1;
-			//printf("yo\n");
 		};
 
 statement: 
@@ -325,7 +266,6 @@ statement:
 	for (x = 0; x < count_arrays; x++) {
 		if (!strcmp(token, list_of_arrays[x])) {
 			printf("Error line %d: forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
-			//yyerror("Error: Forgot to specify an array index when using an array variable.\n");
 			exit(0);
 		}
 	}
@@ -342,15 +282,13 @@ statement:
 		printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 		exit(0);
 	}
-	negN = 0;
 	printf("= %s, __temp__%d\n", dest, productionID-1);
 
 }
 
-| ident L_SQUARE_BRACKET nump R_SQUARE_BRACKET ASSIGN expression
+| ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET ASSIGN expression
 {
 	char *token = $1;
-	//printf("ident arr %s\n", expn);
 	expn = 0;
 	if ($3 < 0) {
 		printf("Error line %d: array index for '%s[%d]' must be an unsigned integer.\n", currLine, token, $3);
@@ -401,95 +339,8 @@ statement:
 			b = true;
 		};
 
-nump:
-	NUMBER
-	{
-		if(isp){
-			char *func_call = $1;
-			if (count_names > 0) {
-				int x = 0;
-				bool matches = false;
-				for (x = 0; x < count_names; x++) {
-					if (!strcmp(func_call, list_of_function_names[x])) {
-						matches = true;
-					}
-				}
-				if (!matches) {
-					printf("Error line %d: function with name '%s' does not exist.\n", currLine, func_call);
-					exit(0);
-				}
-			}
-			printf(". __temp__%d\n", productionID);
-			printf("call %s, __temp__%d\n", $1, productionID);
-			productionID = productionID + 1;
-			$$ = productionID; 
-			isp = false;
-			b = true;
-			break;
-		}
-		if($1 != "array"){
-			printf(". __temp__%d\n", productionID);
-			printf("= __temp__%d, %s\n", productionID, $1);
-			productionID = productionID + 1;
-			$$ = productionID; 
-			l = false;
-			break;
-		}
-		else{
-			$$ = productionID;
-		}		
-	}
-	| SUB NUMBER 
-	{
-		printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
-		exit(0);
-	}
-	| var
-	{
-		if(isp){
-			char *func_call = $1;
-			if (count_names > 0) {
-				int x = 0;
-				bool matches = false;
-				for (x = 0; x < count_names; x++) {
-					if (!strcmp(func_call, list_of_function_names[x])) {
-						matches = true;
-					}
-				}
-				if (!matches) {
-					printf("Error line %d: function with name '%s' does not exist.\n", currLine, func_call);
-					exit(0);
-				}
-			}
-			printf(". __temp__%d\n", productionID);
-			printf("call %s, __temp__%d\n", $1, productionID);
-			productionID = productionID + 1;
-			$$ = productionID; 
-			isp = false;
-			b = true;
-			break;
-		}
-		if($1 != "array"){
-			printf(". __temp__%d\n", productionID);
-			printf("= __temp__%d, %s\n", productionID, $1);
-			productionID = productionID + 1;
-			$$ = productionID; 
-			l = false;
-			break;
-		}
-		else{
-			$$ = productionID;
-		}		
-	}
-	| SUB var
-	{
-		printf("Error line %d: Value '-%s' cannot be negative for array index.\n", currLine, $2);
-		exit(0);
-	}
-	;
-
 statements: 
-	statement SEMICOLON/* epsilon */
+	statement SEMICOLON
 		{}
 	| statement SEMICOLON statements
 		{};
@@ -611,18 +462,7 @@ term:
 			$$ = $1;
 		}
 	| SUB var
-		{ 
-			/*strcpy(negV, "-");
-			strcat(negV, $2);
-			$$ = "SLDKFJDSLKJ";
-
-			char tempnumber[1000];
-			strcpy(tempnumber, "-");
-			strcat(tempnumber, $2);
-			negN = atoi(tempnumber);
-			printf("var negN %d\n", negN); */
-			$$ = $2; 
-		}
+		{ $$ = "SLDKFJDSLKJ"; }
 	| NUMBER
 		{ 
 			int tempnum = $1;
@@ -631,15 +471,32 @@ term:
 		}
 	| SUB NUMBER
 		{ 
-			//printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
+			//printf("Error line %d: number '-%s' cannot be negative for array index.\n", currLine, $2);
 			//exit(0);
-			/*char tempnumber[1000];
-			strcpy(tempnumber, "-");
-			strcat(tempnumber, $2);
-			negN = atoi(tempnumber);
-			printf("num negN %d\n", negN); */
 			$$ = $2; 
 		}
+	| L_PAREN expression R_PAREN
+		{}
+	| SUB L_PAREN expression R_PAREN
+		{ $$ = $3; }
+	| ident L_PAREN expressions R_PAREN
+		{ 
+			isp = true;
+		};
+
+term-s: 
+	var
+		{ 
+			$$ = $1; 
+		}
+	| SUB var
+		{ $$ = "SLDKFJDSLKJ"; }
+	| NUMBER
+		{ 
+			$$ = $1; 
+		}
+	| SUB NUMBER
+		{ $$ = $2; }
 	| L_PAREN expression R_PAREN
 		{}
 	| SUB L_PAREN expression R_PAREN
@@ -661,10 +518,7 @@ expressions:
 		{
 			printf("param __temp__%d\n", $1-1);
 		}
-	/* epsilon */
 		{};
-	/*| comma_sep_expressions
-		{};*/
 
 comma_sep_expressions: 
 	expression
@@ -887,7 +741,6 @@ arrc:
 				}
 			}
 		printf(".[]> %s, __temp__%d\n", $1, productionID-1);
-		//$$ = $1;
 	};
 
 %%
