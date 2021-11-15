@@ -22,6 +22,8 @@
    char array_for_error_4[254][254];
    int error_4_index = 0;
    int expn = 0;
+   int negN = 0;
+   char negV[1000];
    
    char *identToken;
    int numberToken;
@@ -78,8 +80,8 @@
 %token <op_val> IDENT
 %type <op_val> vars-w
 %type <op_val> arrc
-%type <int_val> term-s
 %type <op_val> var-s
+%type <op_val> nump
 
 %%
 
@@ -340,11 +342,12 @@ statement:
 		printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 		exit(0);
 	}
+	negN = 0;
 	printf("= %s, __temp__%d\n", dest, productionID-1);
 
 }
 
-| ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET ASSIGN expression
+| ident L_SQUARE_BRACKET nump R_SQUARE_BRACKET ASSIGN expression
 {
 	char *token = $1;
 	//printf("ident arr %s\n", expn);
@@ -397,6 +400,93 @@ statement:
 			printf("ret __temp__%d\n", productionID-1);
 			b = true;
 		};
+
+nump:
+	NUMBER
+	{
+		if(isp){
+			char *func_call = $1;
+			if (count_names > 0) {
+				int x = 0;
+				bool matches = false;
+				for (x = 0; x < count_names; x++) {
+					if (!strcmp(func_call, list_of_function_names[x])) {
+						matches = true;
+					}
+				}
+				if (!matches) {
+					printf("Error line %d: function with name '%s' does not exist.\n", currLine, func_call);
+					exit(0);
+				}
+			}
+			printf(". __temp__%d\n", productionID);
+			printf("call %s, __temp__%d\n", $1, productionID);
+			productionID = productionID + 1;
+			$$ = productionID; 
+			isp = false;
+			b = true;
+			break;
+		}
+		if($1 != "array"){
+			printf(". __temp__%d\n", productionID);
+			printf("= __temp__%d, %s\n", productionID, $1);
+			productionID = productionID + 1;
+			$$ = productionID; 
+			l = false;
+			break;
+		}
+		else{
+			$$ = productionID;
+		}		
+	}
+	| SUB NUMBER 
+	{
+		printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
+		exit(0);
+	}
+	| var
+	{
+		if(isp){
+			char *func_call = $1;
+			if (count_names > 0) {
+				int x = 0;
+				bool matches = false;
+				for (x = 0; x < count_names; x++) {
+					if (!strcmp(func_call, list_of_function_names[x])) {
+						matches = true;
+					}
+				}
+				if (!matches) {
+					printf("Error line %d: function with name '%s' does not exist.\n", currLine, func_call);
+					exit(0);
+				}
+			}
+			printf(". __temp__%d\n", productionID);
+			printf("call %s, __temp__%d\n", $1, productionID);
+			productionID = productionID + 1;
+			$$ = productionID; 
+			isp = false;
+			b = true;
+			break;
+		}
+		if($1 != "array"){
+			printf(". __temp__%d\n", productionID);
+			printf("= __temp__%d, %s\n", productionID, $1);
+			productionID = productionID + 1;
+			$$ = productionID; 
+			l = false;
+			break;
+		}
+		else{
+			$$ = productionID;
+		}		
+	}
+	| SUB var
+	{
+		printf("Error line %d: Value '-%s' cannot be negative for array index.\n", currLine, $2);
+		exit(0);
+	}
+	;
 
 statements: 
 	statement SEMICOLON/* epsilon */
@@ -521,7 +611,18 @@ term:
 			$$ = $1;
 		}
 	| SUB var
-		{ $$ = "SLDKFJDSLKJ"; }
+		{ 
+			/*strcpy(negV, "-");
+			strcat(negV, $2);
+			$$ = "SLDKFJDSLKJ";
+
+			char tempnumber[1000];
+			strcpy(tempnumber, "-");
+			strcat(tempnumber, $2);
+			negN = atoi(tempnumber);
+			printf("var negN %d\n", negN); */
+			$$ = $2; 
+		}
 	| NUMBER
 		{ 
 			int tempnum = $1;
@@ -530,32 +631,15 @@ term:
 		}
 	| SUB NUMBER
 		{ 
-			printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
-			exit(0);
+			//printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
+			//exit(0);
+			/*char tempnumber[1000];
+			strcpy(tempnumber, "-");
+			strcat(tempnumber, $2);
+			negN = atoi(tempnumber);
+			printf("num negN %d\n", negN); */
 			$$ = $2; 
 		}
-	| L_PAREN expression R_PAREN
-		{}
-	| SUB L_PAREN expression R_PAREN
-		{ $$ = $3; }
-	| ident L_PAREN expressions R_PAREN
-		{ 
-			isp = true;
-		};
-
-term-s: 
-	var
-		{ 
-			$$ = $1; 
-		}
-	| SUB var
-		{ $$ = "SLDKFJDSLKJ"; }
-	| NUMBER
-		{ 
-			$$ = $1; 
-		}
-	| SUB NUMBER
-		{ $$ = $2; }
 	| L_PAREN expression R_PAREN
 		{}
 	| SUB L_PAREN expression R_PAREN
