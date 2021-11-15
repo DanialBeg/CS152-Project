@@ -39,7 +39,6 @@
    int count_integers = 0;
    int count_arrays = 0;
    char idval[1000];
-   //idval[0] = 0;
 
 %}
 
@@ -88,13 +87,12 @@ prog_start:
 		{
 			int i = 0;
 			if(!sawmain){
-				printf("Error line %d: No main function defined.\n", currLine);
+				printf("Error line %d: no main function defined.\n", currLine);
 				exit(0);
 			}	
 		};
 
 functions: 
-	/* epsilon */
 		{}
 	| function functions
 		{};
@@ -132,22 +130,16 @@ function_ident: FUNCTION ident {
 ident:
 	IDENT
 		{ 
-			//printf("hey\n");
 			$$ = $1; 
 		};
 
 declarations: 
-	/* epsilon */
-		{
-			
-		}
+		{}
 	| declaration SEMICOLON declarations
-		{
-		};
+		{};
 
 declaration: 
 	identifiers COLON INTEGER {
-		//printf("hi\n");
 		char *token = $1;
 		if (error_4_index > 0) {
 			int x = 0;
@@ -171,8 +163,6 @@ declaration:
 		}
 
 		decC++;
-		//printf("dec idval %s\n", idval);
-		//idval = '\0';
 		if(strcmp(idval, "")){
 			char *token = idval;
 			if (error_4_index > 0) {
@@ -210,7 +200,6 @@ declaration:
 				for (x = 0; x < error_4_index; x++) {
 					if (!strcmp(token, array_for_error_4[x])) {
 						printf("Error line %d: variable with name '%s' has already declared.\n", currLine, token);
-						//yyerror("Error: Variable has already been declared.\n");
 						exit(0);
 					}
 				}
@@ -223,7 +212,6 @@ declaration:
 			int array_size_error = atoi(array_size);
 			if (array_size_error <= 0) { 
 				printf("Error line %d: array '%s[%s]' cannot be of size <= 0.\n", currLine, token, $5); 
-				//yyerror("Error: Array cannot be of size <= 0.\n");
 				exit(0); 
 			}
 			strcpy(list_of_vars[count_vars], token);
@@ -237,7 +225,6 @@ declaration:
 					for (x = 0; x < error_4_index; x++) {
 						if (!strcmp(token, array_for_error_4[x])) {
 							printf("Error line %d: variable with name '%s' has already declared.\n", currLine, token);
-							//yyerror("Error: Variable has already been declared.\n");
 							exit(0);
 						}
 					}
@@ -250,7 +237,6 @@ declaration:
 				int array_size_error = atoi(array_size);
 				if (array_size_error <= 0) { 
 					printf("Error line %d: array '%s[%s]' cannot be of size <= 0.\n", token, currLine, $5); 
-					//yyerror("Error: Array cannot be of size <= 0.\n");
 					exit(0); 
 				}
 				strcpy(list_of_vars[count_vars], token);
@@ -258,61 +244,18 @@ declaration:
 				printf(".[] %s, %s\n", token, $5);
 				idval[0] = '\0';
 			}
-			
-			//$$ = $1;
 		};
 
 identifiers: 
 	ident
 		{
-			//printf("yo\n");
-
 			$$ = $1;
 		}
 	| ident COMMA identifiers
 		{
 			char *tempident = $3;
-			/*
-			strcpy(list_of_idents[count_ident], tempident);
-			//list_of_idents[count_ident] = $3;
-			count_ident++;
-			//printf("ident %s\n", $3);
-			//printf("ident arr %s\n", list_of_idents[0]);
-			
-			//printf("heyhey\n");
-			//printf("identifiers %s\n", $3);
-			printf(". %s\n", $3);
-			if(!ism){
-				printf("= %s, $%d\n", $1, decC);
-				//ism = false;
-			}
-			char *token = $3;
-			if (error_4_index > 0) {
-				int x = 0;
-				for (x = 0; x < error_4_index; x++) {
-					if (!strcmp(token, array_for_error_4[x])) {
-						//char term[10000];
-						//strcpy(term, 'Error: Variable with name\0');
-						//strcat(term, token);
-						//strcat(term, "" has already declared.\n");
-						//char* term = "Error: Variable with name"  + token +  " has already declared.\n";
-						printf("Error line %d: variable with name '%s' has already declared.\n", currLine, token);
-						//yyerror(term);
-						exit(0);
-					}
-				}
-			}
-			strcpy(array_for_error_4[error_4_index], token);
-			strcpy(list_of_integers[count_integers], token);
-			error_4_index++;
-			count_integers++;
-			strcpy(list_of_vars[count_vars], token);
-			count_vars++;
-			*/
 			strcpy(idval, tempident);
-			//printf("idval %s\n", idval);
 			$$ = $1;
-			//printf("yo\n");
 		};
 
 statement: 
@@ -323,7 +266,6 @@ statement:
 	for (x = 0; x < count_arrays; x++) {
 		if (!strcmp(token, list_of_arrays[x])) {
 			printf("Error line %d: forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
-			//yyerror("Error: Forgot to specify an array index when using an array variable.\n");
 			exit(0);
 		}
 	}
@@ -347,7 +289,6 @@ statement:
 | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET ASSIGN expression
 {
 	char *token = $1;
-	//printf("ident arr %s\n", expn);
 	expn = 0;
 	if ($3 < 0) {
 		printf("Error line %d: array index for '%s[%d]' must be an unsigned integer.\n", currLine, token, $3);
@@ -399,7 +340,7 @@ statement:
 		};
 
 statements: 
-	statement SEMICOLON/* epsilon */
+	statement SEMICOLON
 		{}
 	| statement SEMICOLON statements
 		{};
@@ -530,8 +471,8 @@ term:
 		}
 	| SUB NUMBER
 		{ 
-			printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
-			exit(0);
+			//printf("Error line %d: number '-%s' cannot be negative for array index.\n", currLine, $2);
+			//exit(0);
 			$$ = $2; 
 		}
 	| L_PAREN expression R_PAREN
@@ -577,10 +518,7 @@ expressions:
 		{
 			printf("param __temp__%d\n", $1-1);
 		}
-	/* epsilon */
 		{};
-	/*| comma_sep_expressions
-		{};*/
 
 comma_sep_expressions: 
 	expression
@@ -803,7 +741,6 @@ arrc:
 				}
 			}
 		printf(".[]> %s, __temp__%d\n", $1, productionID-1);
-		//$$ = $1;
 	};
 
 %%
