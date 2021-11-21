@@ -376,7 +376,7 @@ nump:
 	}
 	| SUB NUMBER 
 	{
-		printf("Error line %d: Number '-%s' cannot be negative for array index.\n", currLine, $2);
+		printf("Error line %d: number '-%s' cannot be negative for array index.\n", currLine, $2);
 		exit(0);
 	}
 	| var
@@ -429,13 +429,47 @@ statements:
 		{};
 
 expression: 
-	multiplicative_expression
+	term
 {
-	$$ = $1; 
+	if(isp){
+		char *func_call = $1;
+		if (count_names > 0) {
+			int x = 0;
+			bool matches = false;
+			for (x = 0; x < count_names; x++) {
+				if (!strcmp(func_call, list_of_function_names[x])) {
+					matches = true;
+				}
+			}
+			if (!matches) {
+				printf("Error line %d: function with name '%s' does not exist.\n", currLine, func_call);
+				exit(0);
+			}
+		}
+		printf(". __temp__%d\n", productionID);
+		printf("call %s, __temp__%d\n", $1, productionID);
+		productionID = productionID + 1;
+		$$ = productionID; 
+		isp = false;
+		b = true;
+		break;
+	}
+	if($1 != "array"){
+		printf(". __temp__%d\n", productionID);
+		printf("= __temp__%d, %s\n", productionID, $1);
+		productionID = productionID + 1;
+		$$ = productionID; 
+		l = false;
+		break;
+	}
+	else{
+		$$ = productionID;
+	}		
 }
-	| multiplicative_expression ADD expression
+	| expression ADD expression
 {     
 	char *dest = "_temp";
+	//printf("yo\n");
 	printf(". __temp__%d\n", productionID);
 	printf("+ __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);	
 	char* p = productionID + '0';
@@ -443,7 +477,7 @@ expression:
 	productionID = productionID + 1;
 	$$ = productionID;
 }
-	| multiplicative_expression SUB expression
+	| expression SUB expression
 {
 
 	char *dest = "_temp";
@@ -453,9 +487,49 @@ expression:
 	recent = productionID;
 	productionID = productionID + 1;
 	$$ = productionID;
-
-
-};
+}
+	| expression MULT expression
+	{
+		printf(". __temp__%d\n", productionID, $1);
+		if(b){
+			printf("* __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
+		}
+		else{
+			printf("* __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, recent);
+		}
+		b = false;
+		recent = productionID;
+		productionID++;
+		$$ = "SLDKFJDSLKJ"; 
+	}
+	| expression DIV expression
+	{
+		printf(". __temp__%d\n", productionID, $1);
+		if(b){
+			printf("/ __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
+		}
+		else{
+			printf("/ __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, recent);
+		}
+		b = false;
+		recent = productionID;
+		productionID++;
+		$$ = "SLDKFJDSLKJ";
+	}
+	| expression MOD expression 
+	{
+		printf(". __temp__%d\n", productionID, $1);
+		if(b){
+			printf("% __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, $3-1);
+		}
+		else{
+			printf("% __temp__%d, __temp__%d, __temp__%d\n", productionID, $1-1, recent);
+		}
+		b = false;
+		recent = productionID;
+		productionID++;
+		$$ = "SLDKFJDSLKJ";
+	};
 
 multiplicative_expression: 
 	term
