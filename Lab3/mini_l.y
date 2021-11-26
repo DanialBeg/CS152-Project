@@ -25,6 +25,10 @@
    int loopc = 0;
    int elsec = 0;
    int ifc = 0;
+   int templ = 0;
+   bool nestc = false;
+   bool srun = false;
+   bool inloop = false;
    
    char *identToken;
    int numberToken;
@@ -335,23 +339,59 @@ statement:
 		
 	}
 	| WHILE {
-		printf(": loop_begin%d\n", loopc);
+		inloop = true;
+		if(srun){
+			nestc = true;
+		}
+		if(nestc){
+			printf(": loop_begin%d\n", loopc+1);
+			//templ = loopc + 1;
+		}
+		else{
+			printf(": loop_begin%d\n", loopc);
+			//templ = loopc + 1;
+			//nestc = true;
+		}
+		//nestc = true;
 	}
 	bool_exp BEGINLOOP {
-		printf("! __temp__%d, __temp__%d\n", productionID-1, productionID-1);
-		printf("?:= loop_end%d, __temp__%d\n", loopc, productionID-1);
+		//printf("nestc %d %d\n", nestc, loopc);
+		if(!nestc){
+			printf("! __temp__%d, __temp__%d\n", productionID-1, productionID-1);
+			printf("?:= loop_end%d, __temp__%d\n", loopc, productionID-1);
+		}
+		else{
+			printf("! __temp__%d, __temp__%d\n", productionID-1, productionID-1);
+			printf("?:= loop_end%d, __temp__%d\n", loopc+1, productionID-1);
+		}
+		srun = true;
 	} 
 	statements
 	{
-		printf(":= loop_begin%d\n", loopc);
+		if(!nestc){
+			printf(":= loop_begin%d\n", loopc);
+		}
+		else{
+			printf(":= loop_begin%d\n", loopc+1);
+		}
+		srun = false;
 	}
 	ENDLOOP
 	{
-		printf(": loop_end%d\n", loopc);
-		loopc++;
+		if(!nestc){
+			printf(": loop_end%d\n", loopc);
+			loopc++;
+		}
+		else{
+			printf(": loop_end%d\n", loopc+1);
+		}
+		//printf(": loop_end%d\n", loopc);
+		nestc = false;
 	}
 	| DO BEGINLOOP statements ENDLOOP WHILE bool_exp
-		{}
+	{
+		inloop = true;
+	}
 	| READ vars
 		{}
 	| WRITE vars-w
@@ -360,7 +400,16 @@ statement:
 		}
 	| CONTINUE
 		{
-			printf(":= loop_begin%d\n", loopc);
+			if(!inloop){
+				printf("Error line %d: token \"continue\" outside of a loop.\n", currLine);
+				exit(0);
+			}
+			if(!nestc){
+				printf(":= loop_begin%d\n", loopc);
+			}
+			else{
+				printf(":= loop_begin%d\n", loopc+1);
+			}
 		}
 	| RETURN expression
 		{
