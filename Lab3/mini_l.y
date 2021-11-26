@@ -394,7 +394,10 @@ statement:
 		inloop = true;
 	}
 	| READ vars
-		{}
+	{
+		printf(".< %s\n", $2);
+		$$ = $2;
+	}
 	| WRITE vars-w
 		{
 			$$ = $2;
