@@ -22,6 +22,7 @@
    char array_for_error_4[254][254];
    int error_4_index = 0;
    int expn = 0;
+   int loopc = 0;
    
    char *identToken;
    int numberToken;
@@ -55,11 +56,16 @@
 %type <op_val> identd
 %type <op_val> identifiers
 %type <op_val> identifiersa
+%type <op_val> comp
 %type <op_val> expression
 %type <op_val> expressions
 %type <op_val> comma_sep_expressions
 %type <int_val> multiplicative_expression
 %type <op_val> term
+%type <op_val> relation_exp
+%type <op_val> relation_and_exp
+%type <op_val> bool_exp
+%type <op_val> expressionb
 %start prog_start
 %token BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY
 %token FUNCTION RETURN MAIN
@@ -71,7 +77,8 @@
 %token READ WRITE
 %token AND OR NOT TRUE FALSE
 %token SUB ADD MULT DIV MOD
-%token EQ NEQ LT GT LTE GTE
+%token EQ
+%token <op_val> EQ NEQ LT GT LTE GTE
 %token SEMICOLON COLON COMMA L_PAREN R_PAREN ASSIGN
 %token <op_val> NUMBER L_SQUARE_BRACKET
 %token <op_val> IDENT
@@ -79,6 +86,8 @@
 %type <op_val> arrc
 %type <op_val> var-s
 %type <op_val> nump
+%type <op_val> loop-begin
+%type <op_val> loop-mid
 
 %%
 
@@ -318,8 +327,22 @@ statement:
 		{}
 	| IF bool_exp THEN statements ELSE statements ENDIF
 		{}
-	| WHILE bool_exp BEGINLOOP statements ENDLOOP
-		{}
+	| WHILE {
+		printf(": loop_begin%d\n", loopc);
+	}
+	bool_exp BEGINLOOP {
+		printf("! __temp__%d, __temp__%d\n", productionID-1, productionID-1);
+		printf("?:= loop_end%d, __temp__%d\n", loopc, productionID-1);
+	} 
+	statements
+	{
+		printf(":= loop_begin%d\n", loopc);
+	}
+	ENDLOOP
+	{
+		printf(": loop_end%d\n", loopc);
+		loopc++;
+	}
 	| DO BEGINLOOP statements ENDLOOP WHILE bool_exp
 		{}
 	| READ vars
@@ -669,20 +692,35 @@ comma_sep_expressions:
 
 bool_exp:
 	relation_and_exp
-		{}
+		{
+			//printf("bool relation_and_exp\n");
+			$$ = $1;
+		}
 	| relation_and_exp OR bool_exp
-		{};
+		{
+			$$ = $1;
+		};
 
 relation_and_exp:
 	relation_exp
-		{}
+		{
+			//printf("relation_and_exp\n");
+			$$ = $1;
+		}
 	| relation_exp AND relation_and_exp
 		{};
 
 relation_exp:
-	expression comp expression
-		{}
-	| NOT expression comp expression
+	term comp term
+	{
+		//printf("exp comp exp\n");
+		//printf("%s %s %s\n", $1, $2, $3);
+		printf(". __temp__%d\n", productionID);
+		printf("%s __temp__%d, %s, %s\n", $2, productionID, $1, $3);
+		$$ = productionID;
+		productionID++;
+	}
+	| NOT expressionb comp expressionb
 		{}
 	| TRUE
 		{}
@@ -697,19 +735,43 @@ relation_exp:
 	| NOT L_PAREN bool_exp R_PAREN
 		{};
 
+expressionb: 
+	term
+{
+	$$ = $1;
+};
+
 comp:
 	EQ
-		{}
+	{
+		printf("=\n");
+		$$ = "==";
+	}
 	| NEQ
-		{}
+	{
+		printf("!=\n");
+		$$ = "<>";
+	}
 	| LT
-		{}
+	{
+		//printf("<\n");
+		$$ = "<";
+	}
 	| GT
-		{}
+	{
+		printf(">\n");
+		$$ = ">";
+	}
 	| LTE
-		{}
+	{
+		printf("<=\n");
+		$$ = "<=";
+	}
 	| GTE
-		{};
+	{
+		printf(">=\n");
+		$$ = ">=";
+	};
 
 var-s:  ident
 	{ 
