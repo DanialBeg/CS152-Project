@@ -386,6 +386,7 @@ statement:
 			printf(": loop_end%d\n", loopc+1);
 		}
 		//printf(": loop_end%d\n", loopc);
+		inloop = false;
 		nestc = false;
 	}
 	| DO BEGINLOOP statements ENDLOOP WHILE bool_exp
