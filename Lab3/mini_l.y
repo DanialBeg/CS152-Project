@@ -23,6 +23,8 @@
    int error_4_index = 0;
    int expn = 0;
    int loopc = 0;
+   int elsec = 0;
+   int ifc = 0;
    
    char *identToken;
    int numberToken;
@@ -66,6 +68,7 @@
 %type <op_val> relation_and_exp
 %type <op_val> bool_exp
 %type <op_val> expressionb
+%type <op_val> ifs
 %start prog_start
 %token BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY
 %token FUNCTION RETURN MAIN
@@ -73,7 +76,7 @@
 %token R_SQUARE_BRACKET
 %token INTEGER ARRAY OF
 %token IF THEN ENDIF ELSE
-%token WHILE DO BEGINLOOP ENDLOOP  CONTINUE
+%token WHILE DO BEGINLOOP ENDLOOP CONTINUE
 %token READ WRITE
 %token AND OR NOT TRUE FALSE
 %token SUB ADD MULT DIV MOD
@@ -269,64 +272,68 @@ identifiers:
 
 statement: 
 	ident ASSIGN expression
-{
-	char *token = $1;
-	int x = 0;
-	for (x = 0; x < count_arrays; x++) {
-		if (!strcmp(token, list_of_arrays[x])) {
-			printf("Error line %d: forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
+	{
+		char *token = $1;
+		int x = 0;
+		for (x = 0; x < count_arrays; x++) {
+			if (!strcmp(token, list_of_arrays[x])) {
+				printf("Error line %d: forgot to specify an array index for '%s' when using an array variable.\n", currLine, token);
+				exit(0);
+			}
+		}
+		char *dest = $1;
+		char *src  = $3;
+		int i = 0;
+		bool invar = false;
+		for(i = 0;  i < count_vars; ++i){
+			if(!strcmp($1, list_of_vars[i])){
+				invar = true;
+			}
+		}
+		if(!invar){
+			printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 			exit(0);
 		}
+		printf("= %s, __temp__%d\n", dest, productionID-1);
+
 	}
-	char *dest = $1;
-	char *src  = $3;
-	int i = 0;
-	bool invar = false;
-	for(i = 0;  i < count_vars; ++i){
-		if(!strcmp($1, list_of_vars[i])){
-			invar = true;
+
+	| ident L_SQUARE_BRACKET nump R_SQUARE_BRACKET ASSIGN expression
+	{
+		char *token = $1;
+		expn = 0;
+
+		int x = 0;
+		for (x = 0; x < count_integers; x++) {
+			if (!strcmp(token, list_of_integers[x])) {
+				printf("Error line %d: specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
+				exit(0);
+			}
 		}
-	}
-	if(!invar){
-		printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
-		exit(0);
-	}
-	printf("= %s, __temp__%d\n", dest, productionID-1);
-
-}
-
-| ident L_SQUARE_BRACKET nump R_SQUARE_BRACKET ASSIGN expression
-{
-	char *token = $1;
-	expn = 0;
-
-	int x = 0;
-	for (x = 0; x < count_integers; x++) {
-		if (!strcmp(token, list_of_integers[x])) {
-			printf("Error line %d: specified an array index for '%s' when using a regular integer variable.\n", currLine, token);
+		char *dest = $1;
+		char *src  = $3;
+		int i = 0;
+		bool invar = false;
+		for (i = 0;  i < count_vars; ++i){
+			if(!strcmp($1, list_of_vars[i])){
+				invar = true;
+			}
+		}
+		if(!invar){
+			printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
 			exit(0);
 		}
+		printf("[]= %s, __temp__%d, __temp__%d\n", dest, $3-1, productionID-1);
 	}
-	char *dest = $1;
-	char *src  = $3;
-	int i = 0;
-	bool invar = false;
-	for (i = 0;  i < count_vars; ++i){
-		if(!strcmp($1, list_of_vars[i])){
-			invar = true;
-		}
+	| IF bool_exp
+	{
+		printf("! __temp__%d, __temp__%d\n", productionID-1, productionID-1);
+		printf("?:= else%d, __temp__%d\n", elsec, productionID-1);
 	}
-	if(!invar){
-		printf("Error line %d: variable '%s' not defined.\n", currLine, $1);
-		exit(0);
+	THEN statements ifs
+	{
+		
 	}
-	printf("[]= %s, __temp__%d, __temp__%d\n", dest, $3-1, productionID-1);
-}
-
-	| IF bool_exp THEN statements ENDIF
-		{}
-	| IF bool_exp THEN statements ELSE statements ENDIF
-		{}
 	| WHILE {
 		printf(": loop_begin%d\n", loopc);
 	}
@@ -352,12 +359,33 @@ statement:
 			$$ = $2;
 		}
 	| CONTINUE
-		{}
+		{
+			printf(":= loop_begin%d\n", loopc);
+		}
 	| RETURN expression
 		{
 			printf("ret __temp__%d\n", productionID-1);
 			b = true;
 		};
+
+ifs:
+	ELSE 
+	{
+		printf(": else%d\n", elsec);
+		elsec++;
+	}
+	statements ENDIF
+	{
+		printf(": endif%d\n", ifc);
+		ifc++;
+	}
+	| ENDIF
+	{
+		printf(": else%d\n", elsec);
+		elsec++;
+		printf(": endif%d\n", ifc);
+		ifc++;
+	};
 
 nump:
 	NUMBER
@@ -744,12 +772,12 @@ expressionb:
 comp:
 	EQ
 	{
-		printf("=\n");
+		//printf("=\n");
 		$$ = "==";
 	}
 	| NEQ
 	{
-		printf("!=\n");
+		//printf("!=\n");
 		$$ = "<>";
 	}
 	| LT
@@ -759,17 +787,17 @@ comp:
 	}
 	| GT
 	{
-		printf(">\n");
+		//printf(">\n");
 		$$ = ">";
 	}
 	| LTE
 	{
-		printf("<=\n");
+		//printf("<=\n");
 		$$ = "<=";
 	}
 	| GTE
 	{
-		printf(">=\n");
+		//printf(">=\n");
 		$$ = ">=";
 	};
 
