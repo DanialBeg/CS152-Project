@@ -32,18 +32,18 @@ cat nested_loop.min | parser > nested_loop.mil
 mil_run nested_loop.mil
 echo ""
 
-#error1.min test
+#error_var_decl.min test
 echo "#################"
-echo "error1.min test"
+echo "error_var_decl.min test"
 echo "#################"
-#cat error1.min | parser
+cat error_var_decl.min | parser
 echo ""
 
-#error2.min test
+#error_wrong_type.min test
 echo "#################"
-echo "error2.min test"
+echo "error_wrong_type.min test"
 echo "#################"
-#cat error2.min | parser
+cat error_wrong_type.min | parser
 echo ""
 
 #continue_error.min test
@@ -57,7 +57,7 @@ echo ""
 echo "#################"
 echo "EXTRA CREDIT: fibonacci.min test"
 echo "#################"
-echo "input is 5, should output 8"
+echo "input is 5, so output should be 8"
 cat fibonacci.min | parser > fibonacci.mil
 echo 5 > input.txt
 mil_run fibonacci.mil < input.txt
